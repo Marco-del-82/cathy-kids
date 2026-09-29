@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-heading: 'Outfit', sans-serif;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #07090e;
+    color: #e2e8f0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* 60 BPM Heartbeat Animation (1 beat per second - exactly calming frequency) */
+@keyframes heartPulse {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+  }
+  14% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 18px rgba(59, 130, 246, 0.9));
+  }
+  28% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+  }
+  42% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 25px rgba(96, 165, 250, 1));
+  }
+  70% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+  }
+}
+
+/* Tension Agitated Jitter Animation for Dirty Anger */
+@keyframes tensionJitter {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5));
+  }
+  20% {
+    transform: translate(-2px, 1px) rotate(-0.5deg);
+    filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.8));
+  }
+  40% {
+    transform: translate(2px, -1px) rotate(0.5deg);
+    filter: drop-shadow(0 0 22px rgba(220, 38, 38, 0.9));
+  }
+  60% {
+    transform: translate(-1px, -2px) rotate(-0.3deg);
+  }
+  80% {
+    transform: translate(1px, 2px) rotate(0.3deg);
+  }
+}
+
+/* Audio Waveform Breathing */
+@keyframes waveBreathing {
+  0%, 100% {
+    height: 12px;
+  }
+  50% {
+    height: 48px;
+  }
+}
+
+.animate-heart-pulse {
+  animation: heartPulse 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.animate-tension {
+  animation: tensionJitter 0.35s ease-in-out infinite;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-glow-blue {
+  background: radial-gradient(circle at top, rgba(30, 58, 138, 0.25), rgba(15, 23, 42, 0.75));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  box-shadow: 0 20px 40px -15px rgba(30, 64, 175, 0.3);
+}
+
+.glass-panel-glow-red {
+  background: radial-gradient(circle at top, rgba(127, 29, 29, 0.25), rgba(15, 23, 42, 0.75));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  box-shadow: 0 20px 40px -15px rgba(185, 28, 28, 0.3);
+}
