@@ -1,0 +1,117 @@
+{
+  "name": "Cathy-Kids Lead Pipeline (WhatsApp + Toolkit PDF)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cathy-kids-lead",
+        "options": {}
+      },
+      "name": "Webhook Inbound",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300],
+      "id": "node-webhook-inbound"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.item.json.body || $input.item.json;\nlet phone = (body.telefono || '').replace(/[^0-9]/g, '');\nif (phone.length === 10) {\n  phone = '52' + phone;\n}\n\nreturn {\n  json: {\n    nombre: body.nombre || 'Amigo/a',\n    telefono: phone,\n    rol: body.rol || 'Padre de Familia',\n    origen: body.origen || 'cathykids_club',\n    timestamp: new Date().toISOString(),\n    pdfUrl: 'https://cathykids.club/downloads/Toolkit_Clinico_CatyKids.pdf'\n  }\n};"
+      },
+      "name": "Normalizar Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 300],
+      "id": "node-normalize-lead"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE IF NOT EXISTS cathy_kids_leads (\n  id SERIAL PRIMARY KEY,\n  nombre VARCHAR(255) NOT NULL,\n  telefono VARCHAR(50) NOT NULL,\n  rol VARCHAR(100),\n  origen VARCHAR(100),\n  creado_en TIMESTAMP DEFAULT NOW()\n);\n\nINSERT INTO cathy_kids_leads (nombre, telefono, rol, origen)\nVALUES ($1, $2, $3, $4)\nRETURNING id;",
+        "additionalFields": {
+          "queryParams": "={{ [$json.nombre, $json.telefono, $json.rol, $json.origen] }}"
+        }
+      },
+      "name": "Guardar en PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [660, 200],
+      "id": "node-postgres-crm",
+      "credentials": {
+        "postgres": {
+          "id": "seyer_postgres_cluster",
+          "name": "Seyer PostgreSQL (vps-bd)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://100.84.104.125:4200/api/whatsapp/send-document",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": \"{{ $json.telefono }}\",\n  \"documentUrl\": \"{{ $json.pdfUrl }}\",\n  \"fileName\": \"Toolkit_Clinico_CatyKids.pdf\",\n  \"caption\": \"¡Hola {{ $json.nombre }}! 🧸 Aquí tienes tu Toolkit Clínico de Corregulación de Cathy Calderón. Te esperamos en la Masterclass sobre el Enojo Limpio vs Sucio.\"\n}"
+      },
+      "name": "Despachar WhatsApp API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 400],
+      "id": "node-send-whatsapp"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Lead registrado con éxito\",\n  \"leadId\": $json.id\n}",
+        "options": {}
+      },
+      "name": "Respuesta Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [880, 300],
+      "id": "node-respond-webhook"
+    }
+  ],
+  "connections": {
+    "Webhook Inbound": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Lead": {
+      "main": [
+        [
+          {
+            "node": "Guardar en PostgreSQL",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Despachar WhatsApp API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en PostgreSQL": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

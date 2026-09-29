@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  Play, Pause, RotateCcw, Volume2, ShieldAlert, Heart, Sparkles,
-  BookOpen, Brain, Activity, Download, CheckCircle2, AlertTriangle,
-  ChevronRight, Mic, Radio, Layers, Users, Sparkle
+  Play, Pause, RotateCcw, Volume2, Heart, Sparkles,
+  BookOpen, Brain, Activity, CheckCircle2, Radio
 } from 'lucide-react'
-import confetti from 'canvas-confetti'
+import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
+import { ReguladorRelacional } from './components/ReguladorRelacional'
+import { ToolkitLeadForm } from './components/ToolkitLeadForm'
 
 const PHASES = [
   {
@@ -109,19 +110,11 @@ export default function App() {
   const audioRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(44.97)
+  const duration = 44.97
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
 
   // Lab Character State
   const [selectedChar, setSelectedChar] = useState(CHARACTERS_LAB[0])
-
-  // Speech Emotion AI Simulator State
-  const [simState, setSimState] = useState('calm') // 'calm' | 'agitated'
-  const [alertDismissed, setAlertDismissed] = useState(false)
-
-  // Modal / Form state
-  const [leadForm, setLeadForm] = useState({ name: '', specialty: 'Psicología Infantil', email: '' })
-  const [formSubmitted, setFormSubmitted] = useState(false)
 
   // Audio synchronization effect
   useEffect(() => {
@@ -177,26 +170,6 @@ export default function App() {
     }
   }
 
-  const handleSimulateAlert = () => {
-    setSimState('agitated')
-    setAlertDismissed(false)
-    setTimeout(() => {
-      // Auto calm after 6s
-      setSimState('calm')
-    }, 6000)
-  }
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault()
-    if (!leadForm.name || !leadForm.email) return
-    setFormSubmitted(true)
-    confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.6 }
-    })
-  }
-
   const activePhase = PHASES[activePhaseIndex]
 
   return (
@@ -226,18 +199,19 @@ export default function App() {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#teaser-capsula" className="hover:text-blue-400 transition-colors">La Cápsula 45s</a>
-            <a href="#laboratorio" className="hover:text-blue-400 transition-colors">Laboratorio Clínico</a>
-            <a href="#regulador" className="hover:text-blue-400 transition-colors">Regulador Relacional</a>
-            <a href="#libro" className="hover:text-blue-400 transition-colors">El Libro de Lucía</a>
+          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
+            <a href="#teaser-capsula" className="hover:text-blue-400 transition-colors">Cápsula 45s</a>
+            <a href="#voces" className="hover:text-cyan-400 transition-colors">3 Voces</a>
+            <a href="#laboratorio" className="hover:text-blue-400 transition-colors">Laboratorio</a>
+            <a href="#regulador" className="hover:text-emerald-400 transition-colors">Sensor en Vivo</a>
+            <a href="#libro" className="hover:text-blue-400 transition-colors">El Libro</a>
           </nav>
 
           <a
-            href="#acceso-clinico"
-            className="px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md shadow-blue-600/30 transition-all hover:scale-105"
+            href="#descarga-toolkit"
+            className="px-4 py-2 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 shadow-md shadow-emerald-500/20 transition-all hover:scale-105"
           >
-            Kit para Terapeutas
+            Descargar Toolkit PDF
           </a>
         </div>
       </header>
@@ -435,6 +409,11 @@ export default function App() {
         </div>
       </section>
 
+      {/* SECTION: LAS 3 VOCES DE LOS PERSONAJES */}
+      <section id="voces" className="py-8 bg-[#080b11] border-t border-white/5">
+        <CharacterVoiceSelector />
+      </section>
+
       {/* SECTION 2: LABORATORIO CLÍNICO INTERACTIVO */}
       <section id="laboratorio" className="py-20 px-6 bg-[#0a0d14] border-t border-white/5">
         <div className="max-w-6xl mx-auto">
@@ -534,76 +513,22 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION 3: SIMULADOR DE SPEECH EMOTION AI */}
-      <section id="regulador" className="py-20 px-6 relative overflow-hidden">
+      {/* SECTION 3: LIVE DEMO - REGULADOR RELACIONAL (WEB AUDIO API) */}
+      <section id="regulador" className="py-20 px-6 relative overflow-hidden bg-slate-950/60 border-t border-white/5">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
-              Investigación & Desarrollo Clínico
+          <div className="text-center mb-10">
+            <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">
+              Live Demo en Tiempo Real • Web Audio API
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-3 font-heading">
-              El Regulador Relacional (Prototipo Conceptual)
+              El Regulador Relacional Interactivo
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto mt-2 text-sm md:text-base">
-              La tecnología al servicio de la paz en la mesa familiar: escucha pasiva en el Edge para mediar antes de que el enojo sucio contamine la conversación.
+              Prueba en vivo la tecnología de escucha ambiental para la mesa familiar. Activa tu micrófono y observa cómo cambia de color ante variaciones de energía y volumen.
             </p>
           </div>
 
-          <div className="glass-panel p-8 rounded-3xl border border-white/10 max-w-2xl mx-auto text-center relative">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <Mic className={`w-5 h-5 ${simState === 'agitated' ? 'text-red-400 animate-bounce' : 'text-emerald-400'}`} />
-                <span className="text-sm font-semibold text-white">Dispositivo Ambiental Cathy Kids</span>
-              </div>
-              <span className={`text-xs px-2.5 py-1 rounded-full font-mono ${
-                simState === 'agitated' ? 'bg-red-500/20 text-red-300 border border-red-500/40' : 'bg-emerald-500/20 text-emerald-300'
-              }`}>
-                {simState === 'agitated' ? '⚠️ Reactividad Detectada' : '● Escucha Calma'}
-              </span>
-            </div>
-
-            {/* Simulated Display Screen */}
-            <div className={`p-8 rounded-2xl transition-all duration-500 mb-6 ${
-              simState === 'agitated'
-                ? 'bg-gradient-to-b from-red-950/80 to-slate-900 border border-red-500/50 shadow-2xl shadow-red-900/40'
-                : 'bg-gradient-to-b from-slate-900 to-slate-950 border border-white/10'
-            }`}>
-              {simState === 'agitated' ? (
-                <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center mx-auto text-red-400 animate-pulse">
-                    <AlertTriangle className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-xl font-bold text-red-200">Alerta de Enojo Sucio</h4>
-                  <p className="text-sm text-red-300 max-w-md mx-auto">
-                    “Se detectó tono elevado y aceleración en la prosodia (+82dB). Recuerda pausar, bajar la velocidad y hablar desde el corazón.”
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center mx-auto text-blue-400 animate-heart-pulse">
-                    <Heart className="w-6 h-6" />
-                  </div>
-                  <h4 className="text-xl font-bold text-slate-200">Ambiente en Regulación</h4>
-                  <p className="text-sm text-slate-400 max-w-md mx-auto">
-                    Escucha activa en baja latencia. Procesamiento 100% privado en hardware local (cero envío de audio a nubes externas).
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Trigger Button */}
-            <button
-              onClick={handleSimulateAlert}
-              disabled={simState === 'agitated'}
-              className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all shadow-lg ${
-                simState === 'agitated'
-                  ? 'bg-red-600/50 text-red-200 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white shadow-red-600/30 hover:scale-105 active:scale-95'
-              }`}
-            >
-              {simState === 'agitated' ? 'Emitiendo Alarma de Corregulación...' : 'Simular Grito o Reactividad en la Mesa'}
-            </button>
-          </div>
+          <ReguladorRelacional />
         </div>
       </section>
 
@@ -660,101 +585,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION 5: ACCESO CLÍNICO INSTITUCIONAL (LEAD MAGNET FORM) */}
-      <section id="acceso-clinico" className="py-24 px-6 relative overflow-hidden bg-gradient-to-b from-[#090c13] to-[#06080d]">
-        <div className="max-w-xl mx-auto text-center">
-          <div className="w-14 h-14 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mx-auto text-blue-400 mb-6">
-            <Download className="w-7 h-7" />
-          </div>
-
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white font-heading">
-            Acceso al Kit Clínico
-          </h2>
-          <p className="text-slate-400 text-sm mt-2 mb-8">
-            Diseñado exclusivamente para psicólogos, terapeutas familiares, educadores y directores escolares.
-          </p>
-
-          {formSubmitted ? (
-            <div className="glass-panel p-8 rounded-3xl border border-emerald-500/40 text-center space-y-4">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto animate-bounce" />
-              <h3 className="text-xl font-bold text-white">¡Acceso Concedido, Colega!</h3>
-              <p className="text-sm text-slate-300">
-                Hemos registrado a <strong>{leadForm.name}</strong> en la red clínica de Cathy Kids. Tu Guía de Neuroeducación y la muestra digital de Lucía están listas.
-              </p>
-              <div className="pt-4">
-                <a
-                  href="/CUENTO_LUCIA_ENOJO_LIMPIO_Y_SUCIO.md"
-                  download
-                  className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm inline-flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition-all hover:scale-105"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Descargar Dossier del Cuento (Markdown/PDF)</span>
-                </a>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleFormSubmit} className="glass-panel p-8 rounded-3xl border border-white/10 text-left space-y-4 shadow-2xl">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Nombre Completo
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Lic. María Fernanda Morales"
-                  value={leadForm.name}
-                  onChange={(e) => setLeadForm({ ...leadForm, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Especialidad / Rol Profesional
-                </label>
-                <select
-                  value={leadForm.specialty}
-                  onChange={(e) => setLeadForm({ ...leadForm, specialty: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-white/10 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                >
-                  <option value="Psicología Infantil">Psicología Infantil</option>
-                  <option value="Terapeuta Familiar">Terapeuta Familiar / Pareja</option>
-                  <option value="Educador / Docente">Educador / Orientador Escolar</option>
-                  <option value="Neuropsicólogo">Neuropsiquiatra / Neuropsicólogo</option>
-                  <option value="Madre/Padre">Madre / Padre de Familia</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                  Correo Electrónico Institucional
-                </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="consulta@terapiafamiliar.com"
-                  value={leadForm.email}
-                  onChange={(e) => setLeadForm({ ...leadForm, email: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/90 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                />
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-blue-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  Acceder a la Guía Clínica y Muestra de Preventa
-                </button>
-              </div>
-
-              <p className="text-[11px] text-slate-500 text-center pt-2">
-                Resguardo bajo privacidad médica y escolar. Cero spam comercial.
-              </p>
-            </form>
-          )}
-        </div>
-      </section>
+      {/* SECTION 5: ACCESO CLÍNICO Y ENTREGA DE TOOLKIT (WHATSAPP + PDF) */}
+      <ToolkitLeadForm />
 
       {/* FOOTER */}
       <footer className="border-t border-white/10 py-10 px-6 text-center text-xs text-slate-500 space-y-2">
