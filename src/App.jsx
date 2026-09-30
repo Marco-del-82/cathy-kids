@@ -101,6 +101,7 @@ const CHARACTERS_LAB = [
 export default function App() {
   const videoRef = useRef(null)
   const cinemaContainerRef = useRef(null)
+  const playerWrapperRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(41.8)
@@ -250,15 +251,16 @@ export default function App() {
 
   const toggleFullscreen = () => {
     const video = videoRef.current
+    const wrapper = playerWrapperRef.current || video
     if (!video) return
 
-    // 1. En iPhone (iOS Safari): exactamente igual que YouTube con el reproductor nativo en horizontal
+    // 1. En iPhone (iOS Safari): el reproductor nativo en horizontal (solo el video tiene esta API)
     if (video.webkitEnterFullscreen) {
       video.webkitEnterFullscreen()
       return
     }
 
-    // 2. En PC y Android: Fullscreen directo sobre el video (sin cajas ni bordes de web)
+    // 2. En PC, Android e iPad: Fullscreen sobre el wrapper que contiene video y controles
     const isFs = !!(
       document.fullscreenElement ||
       document.webkitFullscreenElement ||
@@ -267,10 +269,10 @@ export default function App() {
     )
 
     if (!isFs) {
-      if (video.requestFullscreen) {
-        video.requestFullscreen().catch(() => {})
-      } else if (video.webkitRequestFullscreen) {
-        video.webkitRequestFullscreen()
+      if (wrapper.requestFullscreen) {
+        wrapper.requestFullscreen().catch(() => {})
+      } else if (wrapper.webkitRequestFullscreen) {
+        wrapper.webkitRequestFullscreen()
       }
       if (window.screen?.orientation?.lock) {
         window.screen.orientation.lock('landscape').catch(() => {})
@@ -406,7 +408,10 @@ export default function App() {
             </div>
 
             {/* CINEMA SCREEN AND PROJECTOR CONSOLE */}
-            <div className="space-y-4">
+            <div 
+              ref={playerWrapperRef} 
+              className={`${isFullscreen ? 'fixed inset-0 z-[100] bg-black flex flex-col justify-center px-4 md:px-12 py-8' : 'space-y-4'}`}
+            >
               {/* Cinema Screen Frame */}
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
