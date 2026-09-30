@@ -106,7 +106,7 @@ export default function App() {
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(41.8)
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
-  const [isMuted, setIsMuted] = useState(false)
+  const [isMuted, setIsMuted] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   // Media synchronization and projector keyboard controls
@@ -262,13 +262,6 @@ export default function App() {
     const wrapper = playerWrapperRef.current || video
     if (!video) return
 
-    // 1. En iPhone (iOS Safari): el reproductor nativo en horizontal (solo el video tiene esta API)
-    if (video.webkitEnterFullscreen) {
-      video.webkitEnterFullscreen()
-      return
-    }
-
-    // 2. En PC, Android e iPad: Fullscreen sobre el wrapper que contiene video y controles
     const isFs = !!(
       document.fullscreenElement ||
       document.webkitFullscreenElement ||
@@ -277,10 +270,16 @@ export default function App() {
     )
 
     if (!isFs) {
+      // 1. Intentar Fullscreen sobre el wrapper para conservar controles en PC, Android e iPad
       if (wrapper.requestFullscreen) {
-        wrapper.requestFullscreen().catch(() => {})
+        wrapper.requestFullscreen().catch(() => {
+          if (video.webkitEnterFullscreen) video.webkitEnterFullscreen()
+        })
       } else if (wrapper.webkitRequestFullscreen) {
         wrapper.webkitRequestFullscreen()
+      } else if (video.webkitEnterFullscreen) {
+        // Fallback para iPhone Safari
+        video.webkitEnterFullscreen()
       }
       if (window.screen?.orientation?.lock) {
         window.screen.orientation.lock('landscape').catch(() => {})
@@ -416,104 +415,107 @@ export default function App() {
             </div>
 
             {/* CINEMA SCREEN AND PROJECTOR CONSOLE */}
-            <div 
-              ref={playerWrapperRef} 
-              className={`${isFullscreen ? 'fixed inset-0 z-[100] bg-black flex flex-col justify-center px-4 md:px-12 py-8' : 'space-y-4'}`}
-            >
-              {/* Cinema Screen Frame */}
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
-                <video
-                  ref={videoRef}
-                  poster="/assets/lucia_clay_full.jpg"
-                  playsInline
-                  webkit-playsinline="true"
-                  disableRemotePlayback
-                  x-webkit-airplay="deny"
-                  controlsList="nodownload nofullscreen noremoteplayback"
-                  preload="auto"
-                  muted={isMuted}
-                  onClick={togglePlay}
-                  className="w-full h-full object-cover cursor-pointer"
-                >
-                  <source src="/video/cortometraje_45s.mp4?v=20260930_sfx_v2_opt" type="video/mp4" />
-                </video>
-
-                {/* Big Play Overlay when Paused or Stopped */}
-                {!isPlaying && (
-                  <button
-                    type="button"
-                    onClick={togglePlay}
-                    className="absolute inset-0 w-full h-full bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40"
-                  >
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
-                      <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
-                    </div>
-                    <span className="mt-3 sm:mt-4 text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-md">
-                      {currentTime > 0 ? 'Pausado — Toca para continuar' : `Reproducir Video (${Math.floor(duration)}s)`}
-                    </span>
-                    <span className="text-[11px] sm:text-xs text-slate-400 mt-1 font-mono">
-                      {currentTime > 0 ? 'Toca la pantalla para reproducir o pausar' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {/* Interactive Timeline Scrubber */}
-              <div
-                onClick={handleScrub}
-                className="h-3 w-full bg-slate-900 rounded-full cursor-pointer relative overflow-hidden border border-white/10 hover:border-white/30 transition-all group"
-                title="Haz clic o arrastra para moverte en la línea de tiempo"
+            <div className="space-y-4">
+              {/* Fullscreen Player Wrapper */}
+              <div 
+                ref={playerWrapperRef} 
+                className={`relative flex flex-col transition-all duration-300 ${isFullscreen ? 'w-screen h-screen justify-center items-center bg-black' : 'w-full rounded-2xl border border-white/15 shadow-2xl overflow-hidden bg-slate-950'}`}
               >
-                {/* Progress Fill */}
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-100 rounded-full relative"
-                  style={{ width: `${(currentTime / duration) * 100}%` }}
-                >
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-lg border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              </div>
-
-              {/* Sleek, Non-Invasive Modern Control Bar (Mobile & Desktop) */}
-              <div className="flex items-center justify-between gap-3 pt-1">
-                {/* Play / Pause Toggle Button */}
-                <div className="flex items-center gap-3">
-                  <button
+                {/* Cinema Screen Frame */}
+                <div className={`relative w-full ${isFullscreen ? 'h-full flex items-center justify-center' : 'aspect-video'}`}>
+                  <video
+                    ref={videoRef}
+                    src="/video/cortometraje_45s.mp4"
+                    type="video/mp4"
+                    poster="/assets/lucia_clay_full.jpg"
+                    playsInline
+                    webkit-playsinline="true"
+                    disableRemotePlayback
+                    x-webkit-airplay="deny"
+                    controlsList="nodownload nofullscreen noremoteplayback"
+                    preload="auto"
+                    muted={isMuted}
                     onClick={togglePlay}
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold shadow-lg transition-all hover:scale-105 active:scale-95 ${
-                      isPlaying
-                        ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
-                        : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
-                    }`}
-                    title={isPlaying ? 'Pausar Video (Espacio)' : 'Reproducir Video (Espacio)'}
-                  >
-                    {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
-                  </button>
+                    className={`w-full h-full object-contain cursor-pointer ${isFullscreen ? 'max-h-screen' : ''}`}
+                  />
 
-                  <div className="flex items-center gap-1.5 font-mono text-xs sm:text-sm font-bold text-slate-200">
-                    <span className="text-amber-400">{Math.floor(currentTime)}s</span>
-                    <span className="text-slate-500">/</span>
-                    <span className="text-slate-400">{Math.floor(duration)}s</span>
-                  </div>
+                  {/* Big Play Overlay when Paused or Stopped */}
+                  {!isPlaying && (
+                    <button
+                      type="button"
+                      onClick={togglePlay}
+                      className="absolute inset-0 w-full h-full bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40 border-none appearance-none"
+                    >
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
+                        <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
+                      </div>
+                      <span className="mt-3 sm:mt-4 text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-md">
+                        {currentTime > 0 ? 'Pausado — Toca para continuar' : `Reproducir Video (${Math.floor(duration)}s)`}
+                      </span>
+                      <span className="text-[11px] sm:text-xs text-slate-400 mt-1 font-mono">
+                        {currentTime > 0 ? 'Toca la pantalla para reproducir o pausar' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
+                      </span>
+                    </button>
+                  )}
                 </div>
 
-                {/* Secondary Toggles: Mute & Fullscreen */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={toggleMute}
-                    className="w-10 h-10 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-white/10 flex items-center justify-center transition-colors"
-                    title={isMuted ? 'Activar sonido (M)' : 'Silenciar (M)'}
+                {/* Controls Area */}
+                <div className={`w-full ${isFullscreen ? 'absolute bottom-0 left-0 p-4 sm:p-8 bg-gradient-to-t from-black via-black/80 to-transparent' : 'p-4'}`}>
+                  {/* Interactive Timeline Scrubber */}
+                  <div
+                    onClick={handleScrub}
+                    className="h-3 w-full bg-slate-800 rounded-full cursor-pointer relative overflow-hidden border border-white/10 hover:border-white/30 transition-all group"
+                    title="Haz clic o arrastra para moverte en la línea de tiempo"
                   >
-                    {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
-                  </button>
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-100 rounded-full relative"
+                      style={{ width: `${(currentTime / duration) * 100}%` }}
+                    >
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-lg border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
 
-                  <button
-                    onClick={toggleFullscreen}
-                    className="h-10 px-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
-                    title="Pantalla Completa / Proyector (Tecla F)"
-                  >
-                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                    <span className="hidden sm:inline">Pantalla Completa</span>
-                  </button>
+                  {/* Sleek, Non-Invasive Modern Control Bar */}
+                  <div className="flex items-center justify-between gap-3 pt-3">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={togglePlay}
+                        className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold shadow-lg transition-all hover:scale-105 active:scale-95 ${
+                          isPlaying
+                            ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
+                            : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
+                        }`}
+                        title={isPlaying ? 'Pausar Video (Espacio)' : 'Reproducir Video (Espacio)'}
+                      >
+                        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
+                      </button>
+
+                      <div className="flex items-center gap-1.5 font-mono text-xs sm:text-sm font-bold text-slate-200">
+                        <span className="text-amber-400">{Math.floor(currentTime)}s</span>
+                        <span className="text-slate-500">/</span>
+                        <span className="text-slate-400">{Math.floor(duration)}s</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={toggleMute}
+                        className="w-10 h-10 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-white/10 flex items-center justify-center transition-colors"
+                        title={isMuted ? 'Activar sonido (M)' : 'Silenciar (M)'}
+                      >
+                        {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
+                      </button>
+
+                      <button
+                        onClick={toggleFullscreen}
+                        className="h-10 px-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
+                        title="Pantalla Completa / Proyector (Tecla F)"
+                      >
+                        {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                        <span className="hidden sm:inline">Pantalla Completa</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
