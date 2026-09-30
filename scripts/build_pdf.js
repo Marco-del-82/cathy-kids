@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  // Leer imágenes en base64 para inyección directa
+  // Leer imágenes en base64 para incrustación directa
   const enojoSucioB64 = fs.readFileSync(path.join(rootDir, 'public/assets/enojo_sucio_3d.jpg')).toString('base64');
   const enojoLimpioB64 = fs.readFileSync(path.join(rootDir, 'public/assets/enojo_limpio_3d.jpg')).toString('base64');
   const luciaB64 = fs.readFileSync(path.join(rootDir, 'public/assets/lucia_autora.jpg')).toString('base64');
@@ -24,184 +24,456 @@ const __dirname = path.dirname(__filename);
 <head>
   <meta charset="UTF-8">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @page { size: A4 portrait; margin: 0; }
-    body { -webkit-print-color-adjust: exact; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-    .page-break { page-break-after: always; }
+    @page { 
+      size: A4 portrait; 
+      margin: 0; 
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body { 
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact; 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #0f172a;
+      background-color: #ffffff;
+      line-height: 1.5;
+    }
+    h1, h2, h3, h4, h5, .font-heading {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      max-width: 210mm;
+      max-height: 297mm;
+      padding: 13mm 15mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      position: relative;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .page-last {
+      page-break-after: avoid;
+    }
+    .text-justify-clinical {
+      text-align: justify;
+      text-justify: inter-word;
+      hyphens: auto;
+    }
   </style>
 </head>
 <body class="bg-white text-slate-900">
 
-  <!-- PÁGINA 1: PORTADA CLÍNICA Y MATRIZ DE LOS DOS ENOJOS (TIPOGRAFÍA GRANDE DE ALTA LEGIBILIDAD) -->
-  <div class="w-[210mm] h-[297mm] p-10 flex flex-col justify-between page-break bg-white text-slate-900 border-b border-slate-200 relative overflow-hidden box-border">
-    <div class="relative z-10 flex flex-col justify-between h-full">
-      
-      <!-- Header Institucional -->
-      <div class="flex justify-between items-center border-b-2 border-slate-200 pb-3 mb-5">
-        <div>
-          <span class="text-sm font-mono font-bold tracking-widest text-blue-600 uppercase">Cathy Kids • Protocolo Clínico & Neuroeducativo</span>
+  <!-- ==========================================
+       PÁGINA 1: MARCO CLÍNICO Y MATRIZ DE CONTRASTE
+       ========================================== -->
+  <div class="page-a4">
+    
+    <!-- HEADER INSTITUCIONAL -->
+    <header class="border-b-2 border-slate-200 pb-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
+          CK
         </div>
-        <div class="text-right">
-          <span class="text-sm font-bold text-slate-800">Mtra. Cathy Calderón de la Barca</span>
-          <span class="block text-xs text-slate-500 font-mono">Dirección Clínica • UDLA / ILEF</span>
-        </div>
-      </div>
-      
-      <!-- Portada con Avatar Lucía y Título Grande -->
-      <div class="flex items-center gap-6 mb-5">
-        <img src="data:image/jpeg;base64,${luciaB64}" class="w-36 h-36 rounded-3xl object-cover border-4 border-amber-400 shadow-xl flex-shrink-0" />
         <div>
-          <span class="text-xs font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-            Guía de Intervención en el Hogar y Consulta
+          <span class="block text-xs font-heading font-extrabold tracking-widest text-blue-700 uppercase">
+            Cathy Kids • Protocolo Clínico & Neuroeducativo
           </span>
-          <h1 class="text-4xl font-black text-slate-950 tracking-tight leading-tight mt-2.5">
-            La Anatomía del Límite: <br>
-            <span class="text-blue-600">Enojo Limpio</span> vs. <span class="text-rose-600">Enojo Sucio</span>
-          </h1>
-          <p class="text-base text-slate-600 mt-2 font-medium leading-relaxed">
-            Regulación somática, desescalamiento del berrinche y preservación del apego seguro.
-          </p>
+          <span class="block text-[10px] text-slate-500 font-medium">
+            Clínica del Desarrollo, Apego Consciente y Regulación Relacional
+          </span>
         </div>
       </div>
+      <div class="text-right">
+        <span class="block text-xs font-heading font-bold text-slate-900">Mtra. Cathy Calderón de la Barca</span>
+        <span class="block text-[10px] text-slate-500 font-mono">Dirección Clínica • UDLA / ILEF • Folio CK-2026-A4</span>
+      </div>
+    </header>
 
-      <!-- Fundamento Neurobiológico (Caja Clara Ampliada) -->
-      <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-5 shadow-sm">
-        <h3 class="text-base font-black text-blue-900 uppercase tracking-wider mb-2 flex items-center gap-2">
-          <span>🧠 Fundamento Neurobiológico</span>
-        </h3>
-        <p class="text-sm leading-relaxed text-slate-800 font-normal">
-          El enojo no es una conducta que deba reprimirse o castigarse: es la <strong>energía vital de la asertividad</strong> indispensable para salvaguardar la propia integridad y estructurar límites saludables. El punto de inflexión clínico radica en su canal de emisión: el <em>Enojo Sucio</em> secuestra la amígdala cerebral, infunde culpa y Vergüenza Tóxica; el <em>Enojo Limpio</em> activa la corregulación y enseña al menor a poner límites firmes sin quebrar el vínculo de amor familiar.
+    <!-- HERO PRINCIPAL: LUCÍA Y TÍTULO EDITORIAL -->
+    <section class="my-3 flex items-center gap-6 bg-slate-50/70 border border-slate-200/80 rounded-2xl p-4 shadow-sm">
+      <img 
+        src="data:image/jpeg;base64,${luciaB64}" 
+        alt="Lucía Cathy Kids" 
+        class="w-28 h-28 rounded-2xl object-cover border-2 border-amber-400 shadow-md flex-shrink-0"
+      />
+      <div class="flex-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/90 text-blue-900 text-[10px] font-heading font-bold uppercase tracking-wider mb-1.5 border border-blue-200">
+          <span>Guía de Intervención en Sesión Terapéutica y Hogar</span>
+        </div>
+        <h1 class="text-2xl font-heading font-black text-slate-950 leading-tight">
+          La Anatomía del Límite: <br>
+          <span class="text-blue-600">Enojo Limpio</span> vs. <span class="text-rose-600">Enojo Sucio</span>
+        </h1>
+        <p class="text-xs text-slate-600 font-medium leading-normal mt-1.5 text-justify-clinical">
+          Instrumento estructurado de corregulación del sistema nervioso infantil, desescalamiento somático del berrinche y preservación inquebrantable del apego seguro.
         </p>
       </div>
+    </section>
 
-      <!-- Matriz Visual de Contraste con Renders 3D Grandes y Textos Claros -->
-      <div class="grid grid-cols-2 gap-5 mb-4 flex-grow">
-        <!-- Tarjeta Enojo Sucio -->
-        <div class="border-2 border-rose-300 rounded-3xl p-5 bg-rose-50/80 flex flex-col justify-between shadow-sm">
-          <div>
-            <div class="flex items-center gap-4 mb-3.5">
-              <img src="data:image/jpeg;base64,${enojoSucioB64}" class="w-20 h-20 rounded-2xl object-cover border-2 border-rose-400 shadow-md flex-shrink-0" />
-              <div>
-                <h4 class="text-lg font-black text-rose-800 uppercase tracking-wide">Enojo Sucio</h4>
-                <span class="text-base font-bold text-rose-600 font-mono">"Límites que Hieren"</span>
-              </div>
-            </div>
-            <ul class="text-[16px] space-y-2.5 text-slate-800 leading-snug">
-              <li>• <strong>Descarga:</strong> Reactiva, sarcástica, ataque a la identidad.</li>
-              <li>• <strong>Respuesta biológica:</strong> Alarma amigdalina (modo amenaza).</li>
-              <li>• <strong>Herida relacional:</strong> Culpa y Vergüenza Tóxica.</li>
-              <li>• <strong>Símbolo somático:</strong> Maza metálica que cierra el corazón.</li>
-            </ul>
-          </div>
-          <div class="mt-3.5 p-3.5 rounded-xl bg-white border border-rose-200 text-base text-rose-950 font-bold italic shadow-inner">
-            “¡Qué tonta eres, vete a tu cuarto! Así nadie te va a querer.”
-          </div>
-        </div>
-
-        <!-- Tarjeta Enojo Limpio -->
-        <div class="border-2 border-sky-300 rounded-3xl p-5 bg-sky-50/80 flex flex-col justify-between shadow-sm">
-          <div>
-            <div class="flex items-center gap-4 mb-3.5">
-              <img src="data:image/jpeg;base64,${enojoLimpioB64}" class="w-20 h-20 rounded-2xl object-cover border-2 border-sky-400 shadow-md flex-shrink-0" />
-              <div>
-                <h4 class="text-lg font-black text-sky-800 uppercase tracking-wide">Enojo Limpio</h4>
-                <span class="text-base font-bold text-sky-600 font-mono">"Límites con Respeto"</span>
-              </div>
-            </div>
-            <ul class="text-[16px] space-y-2.5 text-slate-800 leading-snug">
-              <li>• <strong>Descarga:</strong> Firme, frontal, regulada, sin descalificar.</li>
-              <li>• <strong>Respuesta biológica:</strong> Cadencia vagal segura (60 BPM).</li>
-              <li>• <strong>Puente vincular:</strong> Separa la conducta del valor del niño.</li>
-              <li>• <strong>Símbolo somático:</strong> Corazón íntegro abierto al afecto.</li>
-            </ul>
-          </div>
-          <div class="mt-3.5 p-3.5 rounded-xl bg-white border border-sky-200 text-base text-sky-950 font-bold italic shadow-inner">
-            “¡Para! No me gusta. Te amo, pero esta conducta no es aceptable.”
-          </div>
-        </div>
+    <!-- FUNDAMENTO NEUROBIOLÓGICO CLÍNICO -->
+    <section class="bg-blue-50/90 border border-blue-200 rounded-2xl p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-1.5 border-b border-blue-200/60 pb-1">
+        <h3 class="text-xs font-heading font-extrabold text-blue-950 uppercase tracking-wider flex items-center gap-2">
+          <span>🧠 Fundamento Neurobiológico del Límite</span>
+        </h3>
+        <span class="text-[10px] font-mono font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
+          Integración Prefrontal
+        </span>
       </div>
+      <p class="text-[12px] leading-relaxed text-slate-800 text-justify-clinical">
+        El enojo no es una patología conductual ni una disfunción que deba erradicarse: constituye la <strong>energía vital de la asertividad</strong> indispensable para resguardar la propia dignidad y estructurar límites necesarios en la infancia. El eje de intervención radica en el modo de emisión: el <em>Enojo Sucio</em> secuestra la amígdala cerebral del menor, activa circuitos de defensa visceral e implanta culpa y Vergüenza Tóxica; en contraste, el <em>Enojo Limpio</em> promueve la <strong>corregulación vagal (60 BPM)</strong>, sosteniendo la firmeza de la regla mientras mantiene el canal vincular y el amor a salvo.
+      </p>
+    </section>
 
-      <!-- Footer Página 1 -->
-      <div class="text-xs font-mono text-slate-500 border-t border-slate-200 pt-3 flex justify-between items-center">
-        <span>cathykids.club • Documento Clínico Oficial</span>
-        <span>Uso autorizado para Terapeutas, Psicólogos y Familias</span>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- PÁGINA 2: PROTOCOLO DE INTERVENCIÓN EN CRISIS (LETRAS GRANDES & LEGIBLES) -->
-  <div class="w-[210mm] h-[297mm] p-10 flex flex-col justify-between bg-white text-slate-900 relative box-border">
-    <div class="flex flex-col justify-between h-full">
-      <div>
-        <div class="flex justify-between items-center border-b-2 border-slate-200 pb-3 mb-5">
-          <span class="text-sm font-mono font-bold tracking-widest text-blue-600 uppercase">Protocolo de Aplicación en Consulta y Hogar</span>
-          <span class="text-sm text-slate-700 font-bold">Metodología de Apego Seguro</span>
-        </div>
-
-        <h2 class="text-4xl font-black text-slate-950 mb-5">Secuencia de 4 Pasos de Corregulación</h2>
-
-        <div class="space-y-4">
-          <!-- Paso 1 -->
-          <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
-            <span class="text-4xl font-black text-blue-600 font-mono flex-shrink-0">01</span>
+    <!-- MATRIZ COMPARATIVA VISUAL (ENOJO SUCIO VS ENOJO LIMPIO) -->
+    <section class="grid grid-cols-2 gap-4 flex-1 my-3">
+      
+      <!-- TARJETA: ENOJO SUCIO -->
+      <div class="border-2 border-rose-300 rounded-2xl p-4 bg-rose-50/70 flex flex-col justify-between shadow-sm">
+        <div>
+          <!-- Cabecera de la Tarjeta -->
+          <div class="flex items-center gap-3 pb-2.5 mb-2.5 border-b border-rose-200">
+            <img 
+              src="data:image/jpeg;base64,${enojoSucioB64}" 
+              alt="Enojo Sucio" 
+              class="w-16 h-16 rounded-xl object-cover border-2 border-rose-400 shadow-sm flex-shrink-0"
+            />
             <div>
-              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">Pausa Fisiológica (Frenar el Enojo Sucio)</h4>
-              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
-                El terapeuta o cuidador registra su propia reactividad visceral antes de intervenir. Si hay aceleración del ritmo cardíaco o prosodia hostil, se aplica silencio compasivo de 5 segundos para evitar contagiar la alerta al sistema nervioso del niño.
-              </p>
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-rose-600 block">Modo Amenaza</span>
+              <h4 class="text-base font-heading font-black text-rose-900 leading-tight">Enojo Sucio</h4>
+              <span class="text-xs font-bold text-rose-700 italic">"Límites que Hieren"</span>
             </div>
           </div>
 
-          <!-- Paso 2 -->
-          <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
-            <span class="text-4xl font-black text-indigo-600 font-mono flex-shrink-0">02</span>
-            <div>
-              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">Alineación Fisiológica al Nivel de los Ojos</h4>
-              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
-                Descender físicamente a la altura de la mirada del infante. La verticalidad autoritaria dispara el reflejo primitivo de amenaza; el nivel horizontal comunica firmeza y contención segura sin necesidad de alzar la voz ni amenazar.
-              </p>
+          <!-- Matriz de Criterios Clínicos -->
+          <div class="space-y-2 text-[11.5px] text-slate-800 text-justify-clinical">
+            <div class="border-b border-rose-100 pb-1.5">
+              <strong class="text-rose-950 font-bold block text-[11px] uppercase tracking-wider">Mecanismo de Descarga:</strong>
+              Reactiva, sarcástica, descalificadora, juicio al valor personal del menor.
             </div>
-          </div>
-
-          <!-- Paso 3 -->
-          <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
-            <span class="text-4xl font-black text-cyan-600 font-mono flex-shrink-0">03</span>
-            <div>
-              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">Nombramiento de la Emoción (Validación sin Concesión)</h4>
-              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
-                Verbalizar con neutralidad afectuosa: <em>"Veo que estás sumamente enojado y es válido sentirse así. Lo que no está permitido es lastimar ni destruir"</em>. Se valida la experiencia afectiva mientras se preserva el límite inquebrantable.
-              </p>
+            <div class="border-b border-rose-100 pb-1.5">
+              <strong class="text-rose-950 font-bold block text-[11px] uppercase tracking-wider">Respuesta Neurobiológica:</strong>
+              Alarma amigdalina aguda (modo supervivencia: lucha, huida o parálisis).
             </div>
-          </div>
-
-          <!-- Paso 4 -->
-          <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
-            <span class="text-4xl font-black text-emerald-600 font-mono flex-shrink-0">04</span>
+            <div class="border-b border-rose-100 pb-1.5">
+              <strong class="text-rose-950 font-bold block text-[11px] uppercase tracking-wider">Secuela Relacional:</strong>
+              Ruptura vincular, siembra de culpa e implantación de Vergüenza Tóxica.
+            </div>
             <div>
-              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">La Pregunta Detonadora de Reflexión</h4>
-              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
-                Una vez que la curva fisiológica retorna a la línea base y la respiración es lenta, se abre el diálogo de aprendizaje: <em>"¿Desde cuál enojo actuamos hace un momento? ¿Y a cuál decidiremos alimentar la próxima vez?"</em>.
-              </p>
+              <strong class="text-rose-950 font-bold block text-[11px] uppercase tracking-wider">Símbolo Somático:</strong>
+              Maza de púas metálica que cierra e hiere el centro del corazón.
             </div>
           </div>
         </div>
 
-        <!-- Cuadro de Compromiso Terapéutico -->
-        <div class="mt-6 p-5 rounded-3xl bg-amber-50 border-2 border-amber-300 shadow-sm">
-          <h4 class="text-sm font-black uppercase tracking-wider text-amber-900 mb-1.5">Compromiso Terapéutico Familiar</h4>
-          <p class="text-[16px] text-amber-950 leading-relaxed font-medium">
-            Este protocolo está concebido para ser entregado a los padres en sesión clínica, acompañando la lectura del cuento de <strong>Lucía y el Enojo Limpio y Sucio</strong> como herramienta de anclaje conductual en el hogar.
+        <!-- Cita Patológica de Ejemplo -->
+        <div class="mt-3 p-2.5 rounded-xl bg-white border border-rose-200 shadow-inner">
+          <span class="block text-[9px] uppercase font-mono font-bold text-rose-500 mb-0.5">Expresión Típica a Desmontar:</span>
+          <p class="text-xs text-rose-950 font-bold italic leading-snug">
+            “¡Qué tonta eres, vete a tu cuarto! ¡Así nadie te va a querer nunca!”
           </p>
         </div>
       </div>
 
-      <!-- Footer Página 2 -->
-      <div class="text-xs font-mono text-slate-500 border-t border-slate-200 pt-3 flex justify-between items-center">
-        <span>© 2026 Cathy Kids • cathykids.club</span>
-        <span>Impresión clínica en alta resolución • Formato A4</span>
+      <!-- TARJETA: ENOJO LIMPIO -->
+      <div class="border-2 border-sky-300 rounded-2xl p-4 bg-sky-50/70 flex flex-col justify-between shadow-sm">
+        <div>
+          <!-- Cabecera de la Tarjeta -->
+          <div class="flex items-center gap-3 pb-2.5 mb-2.5 border-b border-sky-200">
+            <img 
+              src="data:image/jpeg;base64,${enojoLimpioB64}" 
+              alt="Enojo Limpio" 
+              class="w-16 h-16 rounded-xl object-cover border-2 border-sky-400 shadow-sm flex-shrink-0"
+            />
+            <div>
+              <span class="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-600 block">Modo Corregulación</span>
+              <h4 class="text-base font-heading font-black text-sky-900 leading-tight">Enojo Limpio</h4>
+              <span class="text-xs font-bold text-sky-700 italic">"Límites con Respeto"</span>
+            </div>
+          </div>
+
+          <!-- Matriz de Criterios Clínicos -->
+          <div class="space-y-2 text-[11.5px] text-slate-800 text-justify-clinical">
+            <div class="border-b border-sky-100 pb-1.5">
+              <strong class="text-sky-950 font-bold block text-[11px] uppercase tracking-wider">Mecanismo de Descarga:</strong>
+              Firme, frontal, regulada, serena, libre de burla o humillación punitiva.
+            </div>
+            <div class="border-b border-sky-100 pb-1.5">
+              <strong class="text-sky-950 font-bold block text-[11px] uppercase tracking-wider">Respuesta Neurobiológica:</strong>
+              Cadencia vagal ventral segura (60 BPM) con corteza prefrontal conectada.
+            </div>
+            <div class="border-b border-sky-100 pb-1.5">
+              <strong class="text-sky-950 font-bold block text-[11px] uppercase tracking-wider">Secuela Relacional:</strong>
+              Separa la conducta inaceptable de la valía inherente del niño.
+            </div>
+            <div>
+              <strong class="text-sky-950 font-bold block text-[11px] uppercase tracking-wider">Símbolo Somático:</strong>
+              Corazón azul íntegro latiendo en calma y disponible al afecto.
+            </div>
+          </div>
+        </div>
+
+        <!-- Cita Regulada de Ejemplo -->
+        <div class="mt-3 p-2.5 rounded-xl bg-white border border-sky-200 shadow-inner">
+          <span class="block text-[9px] uppercase font-mono font-bold text-sky-600 mb-0.5">Expresión Clínica Sugerida:</span>
+          <p class="text-xs text-sky-950 font-bold italic leading-snug">
+            “¡Para! No me gusta. Te amo con todo mi ser, pero esta conducta no la permito.”
+          </p>
+        </div>
       </div>
-    </div>
+
+    </section>
+
+    <!-- FOOTER INSTITUCIONAL PÁGINA 1 -->
+    <footer class="border-t border-slate-200 pt-2.5 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+      <span>cathykids.club • Documento Clínico Oficial A4</span>
+      <span>Página 1 de 2 • Uso Autorizado para Consulta y Docencia</span>
+      <span>Mtra. Cathy Calderón de la Barca</span>
+    </footer>
+
+  </div>
+
+
+  <!-- ==========================================
+       PÁGINA 2: PROTOCOLO DE INTERVENCIÓN Y REGISTRO
+       ========================================== -->
+  <div class="page-a4 page-last">
+    
+    <!-- HEADER PÁGINA 2 -->
+    <header class="border-b-2 border-slate-200 pb-3 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
+          CK
+        </div>
+        <div>
+          <span class="block text-xs font-heading font-extrabold tracking-widest text-indigo-700 uppercase">
+            Protocolo de Intervención en Crisis y Hoja de Registro
+          </span>
+          <span class="block text-[10px] text-slate-500 font-medium">
+            Metodología de Apego Seguro y Estructura Relacional
+          </span>
+        </div>
+      </div>
+      <div class="text-right">
+        <span class="block text-xs font-heading font-bold text-slate-900">Aplicación Clínica & Psicoeducativa</span>
+        <span class="block text-[10px] text-slate-500 font-mono">Dirección: cathykids.club</span>
+      </div>
+    </header>
+
+    <!-- TÍTULO DE LA SECUENCIA -->
+    <section class="mt-2.5 mb-1.5">
+      <h2 class="text-xl font-heading font-black text-slate-950">
+        Secuencia Clínica de 4 Pasos: Corregulación en Crisis
+      </h2>
+      <p class="text-xs text-slate-600 text-justify-clinical">
+        Protocolo somático secuencial para desescalar el desborde límbico y anclar el límite sin activar la herida del abandono o la humillación.
+      </p>
+    </section>
+
+    <!-- LOS 4 PASOS EN CUADRÍCULA ESTRUCTURADA 2x2 -->
+    <section class="grid grid-cols-2 gap-3 mb-3">
+      
+      <!-- PASO 1 -->
+      <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/80 flex gap-3 shadow-sm">
+        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white font-heading font-black text-base flex items-center justify-center flex-shrink-0 shadow-sm">
+          01
+        </div>
+        <div class="flex-1">
+          <h4 class="text-xs font-heading font-black text-slate-900 uppercase tracking-wide">
+            Pausa Fisiológica (Frenar Reactividad)
+          </h4>
+          <p class="text-[11px] text-slate-700 mt-1 leading-relaxed text-justify-clinical">
+            El terapeuta o adulto registra su propia activación visceral antes de intervenir. Si hay taquicardia o impulso de grito, se aplica <strong>silencio compasivo de 5 segundos</strong> para no transferir alerta al niño.
+          </p>
+          <span class="block text-[10px] text-blue-700 font-semibold italic mt-1 bg-blue-100/60 px-2 py-0.5 rounded">
+            Anclaje: "Respiro hondo, me regulo yo primero."
+          </span>
+        </div>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/80 flex gap-3 shadow-sm">
+        <div class="w-9 h-9 rounded-lg bg-indigo-600 text-white font-heading font-black text-base flex items-center justify-center flex-shrink-0 shadow-sm">
+          02
+        </div>
+        <div class="flex-1">
+          <h4 class="text-xs font-heading font-black text-slate-900 uppercase tracking-wide">
+            Alineación al Nivel de los Ojos
+          </h4>
+          <p class="text-[11px] text-slate-700 mt-1 leading-relaxed text-justify-clinical">
+            Descender físicamente a la altura visual del menor. La verticalidad autoritaria dispara el reflejo primitivo de amenaza; el plano horizontal transmite contención, firmeza y seguridad somática.
+          </p>
+          <span class="block text-[10px] text-indigo-700 font-semibold italic mt-1 bg-indigo-100/60 px-2 py-0.5 rounded">
+            Anclaje: Postura abierta, mirada cálida sin juicio.
+          </span>
+        </div>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/80 flex gap-3 shadow-sm">
+        <div class="w-9 h-9 rounded-lg bg-cyan-700 text-white font-heading font-black text-base flex items-center justify-center flex-shrink-0 shadow-sm">
+          03
+        </div>
+        <div class="flex-1">
+          <h4 class="text-xs font-heading font-black text-slate-900 uppercase tracking-wide">
+            Nombramiento Emocional (Validar)
+          </h4>
+          <p class="text-[11px] text-slate-700 mt-1 leading-relaxed text-justify-clinical">
+            Verbalizar con neutralidad afectuosa: validar la emoción mientras se sostiene el límite conductual con total firmeza: la emoción es bienvenida, pero la conducta lesiva se detiene.
+          </p>
+          <span class="block text-[10px] text-cyan-800 font-semibold italic mt-1 bg-cyan-100/60 px-2 py-0.5 rounded">
+            Frase: "Veo tu frustración, es válida. Pegar no lo permito."
+          </span>
+        </div>
+      </div>
+
+      <!-- PASO 4 -->
+      <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/80 flex gap-3 shadow-sm">
+        <div class="w-9 h-9 rounded-lg bg-emerald-600 text-white font-heading font-black text-base flex items-center justify-center flex-shrink-0 shadow-sm">
+          04
+        </div>
+        <div class="flex-1">
+          <h4 class="text-xs font-heading font-black text-slate-900 uppercase tracking-wide">
+            Pregunta Ancla de Aprendizaje
+          </h4>
+          <p class="text-[11px] text-slate-700 mt-1 leading-relaxed text-justify-clinical">
+            Cuando la curva simpática retorna a línea base y la respiración es lenta, se abre la reflexión: <em>"¿Desde cuál enojo actuamos? ¿A cuál decidiremos alimentar la próxima vez?"</em>.
+          </p>
+          <span class="block text-[10px] text-emerald-800 font-semibold italic mt-1 bg-emerald-100/60 px-2 py-0.5 rounded">
+            Cierre: "El límite se queda, y mi amor por ti también."
+          </span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- NUEVA SECCIÓN CLÍNICA: ESCALA DE OBSERVACIÓN SOMÁTICA (HOJA DE TRABAJO IMPRIMIBLE) -->
+    <section class="border-2 border-slate-300 rounded-2xl p-3.5 bg-slate-50/90 shadow-sm mb-3">
+      <div class="flex justify-between items-center mb-2 pb-1.5 border-b border-slate-200">
+        <h3 class="text-[11px] font-heading font-extrabold text-slate-950 uppercase tracking-tight flex items-center gap-1.5">
+          <span>📋 Escala de Observación Somática (Checklist para Sesión y Hogar)</span>
+        </h3>
+        <span class="text-[9px] font-mono font-bold text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">
+          Uso Clínico
+        </span>
+      </div>
+
+      <table class="w-full text-[11px] text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-200/80 text-slate-800 font-heading font-bold uppercase text-[9.5px] tracking-wider">
+            <th class="p-2 border border-slate-300 rounded-tl-lg w-1/4">Dimensión Somática</th>
+            <th class="p-2 border border-slate-300 w-1/3 text-rose-800">Enojo Sucio (Alarma / Punitivo)</th>
+            <th class="p-2 border border-slate-300 w-1/3 text-sky-800">Enojo Limpio (Regulado / Asertivo)</th>
+            <th class="p-2 border border-slate-300 rounded-tr-lg text-center w-16">Estatus</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 bg-white">
+          <tr>
+            <td class="p-2 border border-slate-200 font-bold text-slate-900">
+              1. Respiración & Ritmo
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              Taquipnea, mandíbula trabada, tensión torácica desbordada.
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              Respiración diafragmática pausada (cadencia vagal 60 BPM).
+            </td>
+            <td class="p-2 border border-slate-200 text-center font-mono text-xs">
+              <span class="inline-block w-4 h-4 border-2 border-slate-400 rounded"></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="p-2 border border-slate-200 font-bold text-slate-900">
+              2. Prosodia y Tono de Voz
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              Grito, sarcasmo punitivo, ironía, amenaza o burla.
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              Tono firme, neutral, pausado, sin oscilaciones lesivas.
+            </td>
+            <td class="p-2 border border-slate-200 text-center font-mono text-xs">
+              <span class="inline-block w-4 h-4 border-2 border-slate-400 rounded"></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="p-2 border border-slate-200 font-bold text-slate-900">
+              3. Corporalidad & Mirada
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              Verticalidad de dominación, ceño fruncido, puños cerrados.
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              A la altura de los ojos del niño, palmas visibles, presencia cálida.
+            </td>
+            <td class="p-2 border border-slate-200 text-center font-mono text-xs">
+              <span class="inline-block w-4 h-4 border-2 border-slate-400 rounded"></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="p-2 border border-slate-200 font-bold text-slate-900">
+              4. Cierre del Vínculo
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              Aislamiento punitivo ("no te quiero ver"), culpa duradera.
+            </td>
+            <td class="p-2 border border-slate-200 text-slate-700 text-justify-clinical">
+              El límite se mantiene inamovible, pero el afecto sigue explícito.
+            </td>
+            <td class="p-2 border border-slate-200 text-center font-mono text-xs">
+              <span class="inline-block w-4 h-4 border-2 border-slate-400 rounded"></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- COMPROMISO TERAPÉUTICO Y FIRMA CLÍNICA -->
+    <section class="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-3.5 shadow-sm mb-2">
+      <div class="flex items-center justify-between mb-1">
+        <h4 class="text-xs font-heading font-black uppercase tracking-wider text-amber-950">
+          Compromiso Clínico y Relacional de la Familia
+        </h4>
+        <span class="text-[9px] font-mono font-bold text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded">
+          Anclaje de Consulta
+        </span>
+      </div>
+      <p class="text-[11.5px] text-amber-950 leading-relaxed text-justify-clinical mb-3">
+        “Nos comprometemos a ejercer límites firmes que protejan la estructura familiar sin recurrir a la agresión o el sarcasmo, recordando que <strong>el límite sostiene la conducta, mientras que el amor incondicional sostiene la autoestima</strong>.”
+      </p>
+
+      <div class="grid grid-cols-2 gap-8 pt-3 border-t border-amber-300/70 text-center">
+        <div>
+          <div class="h-6 border-b border-dashed border-amber-700/60 mx-6 mb-1"></div>
+          <span class="text-[10px] font-heading font-bold text-amber-950 block">Firma del Terapeuta / Especialista Clínico</span>
+          <span class="text-[9px] text-amber-800/80 font-mono">Cédula Profesional / Adscripción</span>
+        </div>
+        <div>
+          <div class="h-6 border-b border-dashed border-amber-700/60 mx-6 mb-1"></div>
+          <span class="text-[10px] font-heading font-bold text-amber-950 block">Mtra. Cathy Calderón de la Barca</span>
+          <span class="text-[9px] text-amber-800/80 font-mono">Dirección Clínica • Cathy Kids</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER INSTITUCIONAL PÁGINA 2 -->
+    <footer class="border-t border-slate-200 pt-2.5 flex justify-between items-center text-[10px] text-slate-500 font-mono">
+      <span>cathykids.club • Documento Clínico Oficial A4</span>
+      <span>Página 2 de 2 • Impresión en Alta Resolución</span>
+      <span>© 2026 Cathy Kids</span>
+    </footer>
+
   </div>
 
 </body>
@@ -214,7 +486,8 @@ const __dirname = path.dirname(__filename);
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 1200, height: 1600, deviceScaleFactor: 2 });
+  // Viewport A4 a 150 DPI (~1240 x 1754) con scale factor 2 para ultra nitidez
+  await page.setViewport({ width: 1240, height: 1754, deviceScaleFactor: 2 });
   await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
   const pdfPath = path.join(outDir, 'Toolkit_Clinico_CatyKids.pdf');
@@ -226,5 +499,5 @@ const __dirname = path.dirname(__filename);
   });
 
   await browser.close();
-  console.log(`✅ Toolkit_Clinico_CatyKids.pdf generado con artes claros y tipografía grande en ${pdfPath}`);
+  console.log(`✅ Toolkit_Clinico_CatyKids.pdf generado con diseño editorial de alta gama en ${pdfPath}`);
 })();
