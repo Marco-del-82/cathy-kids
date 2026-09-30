@@ -26,7 +26,7 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
     if (!video) return;
 
     if (shouldAnimate) {
-      window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
+      window.dispatchEvent(new CustomEvent('cathy:duck-main-video'));
       video.muted = false;
       const playPromise = video.play();
       if (playPromise !== undefined) {
@@ -37,6 +37,7 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
       try {
         video.currentTime = 0;
       } catch (e) {}
+      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     }
   }, [shouldAnimate]);
 
@@ -44,9 +45,10 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
     <div
       onMouseEnter={() => {
         setIsHovered(true);
-        window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
       }}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
       className={`group relative rounded-3xl p-5 border bg-slate-900/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
         isPlaying ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
       }`}
@@ -255,6 +257,7 @@ export const CharacterVoiceSelector = () => {
         activeAudioRef.current = null;
       }
       setPlayingId(null);
+      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
       return;
     }
 
@@ -267,7 +270,7 @@ export const CharacterVoiceSelector = () => {
 
     // Crear y reproducir nueva instancia con soporte móvil completo
     try {
-      window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
+      window.dispatchEvent(new CustomEvent('cathy:duck-main-video'));
       const audio = new Audio(char.audioSrc);
       audio.playsInline = true;
       audio.preload = 'auto';
@@ -276,12 +279,14 @@ export const CharacterVoiceSelector = () => {
       audio.onended = () => {
         setPlayingId(null);
         activeAudioRef.current = null;
+        window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
       };
 
       audio.onerror = (err) => {
         console.error("Audio playback error:", err);
         setPlayingId(null);
         activeAudioRef.current = null;
+        window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
       };
 
       const playPromise = audio.play();
@@ -292,11 +297,13 @@ export const CharacterVoiceSelector = () => {
           console.warn("Autoplay/Gesture error:", err);
           setPlayingId(null);
           activeAudioRef.current = null;
+          window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
         });
       }
     } catch (e) {
       console.error("Fatal audio init error:", e);
       setPlayingId(null);
+      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     }
   };
 

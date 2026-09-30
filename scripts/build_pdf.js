@@ -83,17 +83,17 @@ const __dirname = path.dirname(__filename);
               <img src="data:image/jpeg;base64,${enojoSucioB64}" class="w-20 h-20 rounded-2xl object-cover border-2 border-rose-400 shadow-md flex-shrink-0" />
               <div>
                 <h4 class="text-lg font-black text-rose-800 uppercase tracking-wide">Enojo Sucio</h4>
-                <span class="text-sm font-bold text-rose-600 font-mono">"Límites que Hieren"</span>
+                <span class="text-base font-bold text-rose-600 font-mono">"Límites que Hieren"</span>
               </div>
             </div>
-            <ul class="text-[14px] space-y-2.5 text-slate-800 leading-snug">
+            <ul class="text-[16px] space-y-2.5 text-slate-800 leading-snug">
               <li>• <strong>Descarga:</strong> Reactiva, sarcástica, ataque a la identidad.</li>
               <li>• <strong>Respuesta biológica:</strong> Alarma amigdalina (modo amenaza).</li>
               <li>• <strong>Herida relacional:</strong> Culpa y Vergüenza Tóxica.</li>
               <li>• <strong>Símbolo somático:</strong> Maza metálica que cierra el corazón.</li>
             </ul>
           </div>
-          <div class="mt-3.5 p-3.5 rounded-xl bg-white border border-rose-200 text-sm text-rose-950 font-bold italic shadow-inner">
+          <div class="mt-3.5 p-3.5 rounded-xl bg-white border border-rose-200 text-base text-rose-950 font-bold italic shadow-inner">
             “¡Qué tonta eres, vete a tu cuarto! Así nadie te va a querer.”
           </div>
         </div>
@@ -105,17 +105,17 @@ const __dirname = path.dirname(__filename);
               <img src="data:image/jpeg;base64,${enojoLimpioB64}" class="w-20 h-20 rounded-2xl object-cover border-2 border-sky-400 shadow-md flex-shrink-0" />
               <div>
                 <h4 class="text-lg font-black text-sky-800 uppercase tracking-wide">Enojo Limpio</h4>
-                <span class="text-sm font-bold text-sky-600 font-mono">"Límites con Respeto"</span>
+                <span class="text-base font-bold text-sky-600 font-mono">"Límites con Respeto"</span>
               </div>
             </div>
-            <ul class="text-[14px] space-y-2.5 text-slate-800 leading-snug">
+            <ul class="text-[16px] space-y-2.5 text-slate-800 leading-snug">
               <li>• <strong>Descarga:</strong> Firme, frontal, regulada, sin descalificar.</li>
               <li>• <strong>Respuesta biológica:</strong> Cadencia vagal segura (60 BPM).</li>
               <li>• <strong>Puente vincular:</strong> Separa la conducta del valor del niño.</li>
               <li>• <strong>Símbolo somático:</strong> Corazón íntegro abierto al afecto.</li>
             </ul>
           </div>
-          <div class="mt-3.5 p-3.5 rounded-xl bg-white border border-sky-200 text-sm text-sky-950 font-bold italic shadow-inner">
+          <div class="mt-3.5 p-3.5 rounded-xl bg-white border border-sky-200 text-base text-sky-950 font-bold italic shadow-inner">
             “¡Para! No me gusta. Te amo, pero esta conducta no es aceptable.”
           </div>
         </div>
@@ -146,8 +146,8 @@ const __dirname = path.dirname(__filename);
           <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
             <span class="text-4xl font-black text-blue-600 font-mono flex-shrink-0">01</span>
             <div>
-              <h4 class="text-base font-black text-slate-950 uppercase tracking-wider">Pausa Fisiológica (Frenar el Enojo Sucio)</h4>
-              <p class="text-[14px] text-slate-700 mt-1 leading-relaxed font-medium">
+              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">Pausa Fisiológica (Frenar el Enojo Sucio)</h4>
+              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
                 El terapeuta o cuidador registra su propia reactividad visceral antes de intervenir. Si hay aceleración del ritmo cardíaco o prosodia hostil, se aplica silencio compasivo de 5 segundos para evitar contagiar la alerta al sistema nervioso del niño.
               </p>
             </div>
@@ -157,8 +157,8 @@ const __dirname = path.dirname(__filename);
           <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
             <span class="text-4xl font-black text-indigo-600 font-mono flex-shrink-0">02</span>
             <div>
-              <h4 class="text-base font-black text-slate-950 uppercase tracking-wider">Alineación Fisiológica al Nivel de los Ojos</h4>
-              <p class="text-[14px] text-slate-700 mt-1 leading-relaxed font-medium">
+              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">Alineación Fisiológica al Nivel de los Ojos</h4>
+              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
                 Descender físicamente a la altura de la mirada del infante. La verticalidad autoritaria dispara el reflejo primitivo de amenaza; el nivel horizontal comunica firmeza y contención segura sin necesidad de alzar la voz ni amenazar.
               </p>
             </div>
@@ -168,8 +168,8 @@ const __dirname = path.dirname(__filename);
           <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
             <span class="text-4xl font-black text-cyan-600 font-mono flex-shrink-0">03</span>
             <div>
-              <h4 class="text-base font-black text-slate-950 uppercase tracking-wider">Nombramiento de la Emoción (Validación sin Concesión)</h4>
-              <p class="text-[14px] text-slate-700 mt-1 leading-relaxed font-medium">
+              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">Nombramiento de la Emoción (Validación sin Concesión)</h4>
+              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
                 Verbalizar con neutralidad afectuosa: <em>"Veo que estás sumamente enojado y es válido sentirse así. Lo que no está permitido es lastimar ni destruir"</em>. Se valida la experiencia afectiva mientras se preserva el límite inquebrantable.
               </p>
             </div>
@@ -179,8 +179,8 @@ const __dirname = path.dirname(__filename);
           <div class="p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-start gap-5 shadow-sm">
             <span class="text-4xl font-black text-emerald-600 font-mono flex-shrink-0">04</span>
             <div>
-              <h4 class="text-base font-black text-slate-950 uppercase tracking-wider">La Pregunta Detonadora de Reflexión</h4>
-              <p class="text-[14px] text-slate-700 mt-1 leading-relaxed font-medium">
+              <h4 class="text-lg font-black text-slate-950 uppercase tracking-wider">La Pregunta Detonadora de Reflexión</h4>
+              <p class="text-[16px] text-slate-700 mt-1 leading-relaxed font-medium">
                 Una vez que la curva fisiológica retorna a la línea base y la respiración es lenta, se abre el diálogo de aprendizaje: <em>"¿Desde cuál enojo actuamos hace un momento? ¿Y a cuál decidiremos alimentar la próxima vez?"</em>.
               </p>
             </div>
@@ -190,7 +190,7 @@ const __dirname = path.dirname(__filename);
         <!-- Cuadro de Compromiso Terapéutico -->
         <div class="mt-6 p-5 rounded-3xl bg-amber-50 border-2 border-amber-300 shadow-sm">
           <h4 class="text-sm font-black uppercase tracking-wider text-amber-900 mb-1.5">Compromiso Terapéutico Familiar</h4>
-          <p class="text-[14px] text-amber-950 leading-relaxed font-medium">
+          <p class="text-[16px] text-amber-950 leading-relaxed font-medium">
             Este protocolo está concebido para ser entregado a los padres en sesión clínica, acompañando la lectura del cuento de <strong>Lucía y el Enojo Limpio y Sucio</strong> como herramienta de anclaje conductual en el hogar.
           </p>
         </div>

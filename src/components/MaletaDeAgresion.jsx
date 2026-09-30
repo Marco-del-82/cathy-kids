@@ -15,12 +15,13 @@ export const MaletaDeAgresion = () => {
       setIsHovered(false);
       video.pause();
       try { video.currentTime = 0; } catch (e) {}
+      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     };
 
     window.addEventListener('cathy:stop-all-character-media', handleStopMedia);
 
     if (isHovered && !isDeparted) {
-      window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
+      window.dispatchEvent(new CustomEvent('cathy:duck-main-video'));
       video.muted = false;
       const playPromise = video.play();
       if (playPromise !== undefined) playPromise.catch(() => {});
@@ -29,10 +30,12 @@ export const MaletaDeAgresion = () => {
       try {
         video.currentTime = 0;
       } catch (e) {}
+      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     }
 
     return () => {
       window.removeEventListener('cathy:stop-all-character-media', handleStopMedia);
+      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     };
   }, [isHovered, isDeparted]);
 
@@ -145,7 +148,7 @@ export const MaletaDeAgresion = () => {
             {isDeparted ? (
               /* Imagen de Agresión volando en su avión Punk Flyer tras ser despedido */
               <img
-                src="/assets/agresion_avion_despedida.jpg"
+                src="/assets/agresion_punk_flyer_despedida.jpg?v=20260930_master"
                 alt="Agresión despidiéndose en su avión Punk Flyer"
                 className="w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-700 hover:scale-105"
               />
