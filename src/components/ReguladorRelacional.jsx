@@ -19,20 +19,32 @@ export const ReguladorRelacional = () => {
     if (isDemoMode) stopDemo();
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { echoCancellation: true, noiseSuppression: false } 
-      });
-      streamRef.current = stream;
-
       const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtxClass) {
+        throw new Error("Tu navegador no soporta Web Audio API.");
+      }
+
+      // Inicializar AudioContext en el gesto de usuario (requerido para iOS Safari)
       const audioCtx = new AudioCtxClass();
       if (audioCtx.state === 'suspended') {
         await audioCtx.resume();
       }
 
+      // Acceso al micrófono con fallback compatible con móviles
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: { echoCancellation: true, noiseSuppression: false } 
+        });
+      } catch (mediaErr) {
+        // Fallback básico para navegadores móviles estrictos
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+      streamRef.current = stream;
+
       const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.5;
+      analyser.smoothingTimeConstant = 0.4;
 
       const source = audioCtx.createMediaStreamSource(stream);
       source.connect(analyser);
@@ -52,14 +64,17 @@ export const ReguladorRelacional = () => {
         for (let i = 0; i < bufferLength; i++) {
           sum += dataArray[i];
         }
-        // Mayor sensibilidad acústica sin requerir gritos (curva de ganancia suave)
-        const amplifiedVolume = Math.min(100, Math.round(Math.pow(average / 180, 0.8) * 100));
+        const average = sum / bufferLength;
+
+        // Curva de sensibilidad calibrada para móviles y desktop
+        const normalized = Math.min(1, average / 110);
+        const amplifiedVolume = Math.min(100, Math.round(Math.pow(normalized, 0.75) * 100));
         setDecibels(amplifiedVolume);
 
-        // Umbral calibrado: hablar con firmeza/énfasis (~26-30dB) activa la alerta
-        if (amplifiedVolume > 28) {
+        // Umbral calibrado: hablar con firmeza reactiva (~30-35dB) activa la alerta
+        if (amplifiedVolume > 32) {
           setAlertaSucia(true);
-        } else if (amplifiedVolume < 18) {
+        } else if (amplifiedVolume < 20) {
           setAlertaSucia(false);
         }
 
@@ -69,7 +84,7 @@ export const ReguladorRelacional = () => {
       updateVolume();
     } catch (err) {
       console.error("Error al acceder al micrófono:", err);
-      setErrorMsg("No se pudo acceder al micrófono. Activa el 'Modo Simulación' para probar.");
+      setErrorMsg("No se pudo acceder al micrófono o permisos denegados. Prueba el 'Modo Simulación Demo' o verifica los permisos de tu navegador.");
       setListening(false);
     }
   };

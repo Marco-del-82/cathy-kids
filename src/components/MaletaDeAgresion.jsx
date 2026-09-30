@@ -62,7 +62,7 @@ export const MaletaDeAgresion = () => {
         <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-white/10 relative text-center">
           <div className="relative group">
             <img
-              src="/assets/agresion_3d.jpg"
+              src="/assets/agresion.jpg"
               alt="Agresión con Maleta"
               className={`w-64 h-64 object-cover rounded-2xl shadow-2xl transition-all duration-700 ${
                 isDeparted

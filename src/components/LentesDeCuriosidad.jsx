@@ -100,7 +100,7 @@ export const LentesDeCuriosidad = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
             <div className="md:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-900/60 rounded-2xl border border-red-500/20">
               <img
-                src="/assets/enojo_sucio_3d.jpg"
+                src="/assets/enojo-sucio.jpg"
                 alt="Juicio Reactivo"
                 className="w-48 h-48 object-cover rounded-2xl shadow-xl filter saturate-125"
               />

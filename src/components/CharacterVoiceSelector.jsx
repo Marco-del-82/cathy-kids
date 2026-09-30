@@ -14,7 +14,7 @@ export const CharacterVoiceSelector = () => {
       quote: '"A veces siento que el enojo me atrapa... pero no quiero lastimar a los que amo."',
       audioSrc: '/audio/lucia_voice.mp3',
       voiceName: 'Voz Dulce / Infantil',
-      image: '/assets/lucia_3d.jpg',
+      image: '/assets/lucia.jpg',
       magicPower: 'Báculo de Domadora y Piedrita de la Paz',
       secretMessage: 'Al mirar a mamá y papá a los ojos con valentía, la vergüenza se disuelve.',
       theme: {
@@ -33,7 +33,7 @@ export const CharacterVoiceSelector = () => {
       quote: '"El enojo no es para destruir; es mi fuerza para poner límites con amor y cuidar nuestro corazón."',
       audioSrc: '/audio/enojo_limpio_voice.mp3',
       voiceName: 'Voz Cálida con Autoridad',
-      image: '/assets/enojo_limpio_3d.jpg',
+      image: '/assets/enojo-limpio.jpg',
       magicPower: 'Escudo de Luz y Corazón Abierto',
       secretMessage: 'Dice ¡Para! y ¡No me gusta! con respeto, sin usar malas palabras.',
       theme: {
@@ -52,7 +52,7 @@ export const CharacterVoiceSelector = () => {
       quote: '"¡Todo me molesta! ¡Si me hieren, yo grito más fuerte para defenderme!"',
       audioSrc: '/audio/enojo_sucio_voice.mp3',
       voiceName: 'Voz Áspera / Acelerada',
-      image: '/assets/enojo_sucio_3d.jpg',
+      image: '/assets/enojo-sucio.jpg',
       magicPower: 'Bola de Púas de Metal sobre el Corazón',
       secretMessage: 'Cree que atacar primero lo protegerá, pero solo lo deja solito.',
       theme: {
