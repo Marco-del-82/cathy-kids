@@ -156,12 +156,43 @@ export default function App() {
       }
     }
 
+    // Audio Ducking Inteligente: Rampa de volumen suave
+    let fadeAnimId = null
+    const fadeVolume = (targetVolume, duration = 300) => {
+      if (!video) return
+      if (fadeAnimId) cancelAnimationFrame(fadeAnimId)
+      const startVolume = video.volume
+      const startTime = performance.now()
+
+      const step = (now) => {
+        const elapsed = now - startTime
+        const progress = Math.min(1, elapsed / duration)
+        video.volume = startVolume + (targetVolume - startVolume) * progress
+        if (progress < 1) {
+          fadeAnimId = requestAnimationFrame(step)
+        } else {
+          fadeAnimId = null
+        }
+      }
+      fadeAnimId = requestAnimationFrame(step)
+    }
+
+    const handleDuckMainVideo = () => {
+      fadeVolume(0.20, 350)
+    }
+
+    const handleUnduckMainVideo = () => {
+      fadeVolume(1.0, 450)
+    }
+
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('ended', handleEnded)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
     window.addEventListener('cathy:pause-main-video', handlePauseMainVideo)
+    window.addEventListener('cathy:duck-main-video', handleDuckMainVideo)
+    window.addEventListener('cathy:unduck-main-video', handleUnduckMainVideo)
 
     // Atajos de teclado para Presentación en Proyector
     const handleKeyDown = (e) => {
@@ -861,7 +892,7 @@ export default function App() {
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-slate-950 font-bold hover:bg-slate-200 transition-all shadow-xl hover:scale-105"
               >
                 <BookOpen className="w-4 h-4" />
-                <span>Solicitar Muestra para Terapeutas</span>
+                <span>Solicita Muestra para Terapeutas (Próximamente)</span>
               </a>
             </div>
           </div>
