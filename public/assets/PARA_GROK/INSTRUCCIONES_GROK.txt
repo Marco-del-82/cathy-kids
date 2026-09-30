@@ -1,0 +1,75 @@
+================================================================================
+GUÍA DE ENCAPSULACIÓN Y MONTAJE CINEMATOGRÁFICO - CATHY KIDS (45 SEGUNDOS)
+================================================================================
+CLIENTE: Cathy Calderón de la Barca (Cathy Kids)
+OBJETIVO: Presentación clínica y psicoeducativa para terapeutas y padres.
+ESTILO DE NARRACIÓN: Narradora clínica serena, empática y reflexiva. Cero dramatismo infantil burdo.
+
+--------------------------------------------------------------------------------
+1. ESTRUCTURA DE CARPETAS ENTREGADA:
+--------------------------------------------------------------------------------
+PARA_GROK/
+├── CLIPS_VIDEO_720P/           -> 4 clips de video brutos (10.04s c/u, 24fps, H.264, 1280x720)
+│   ├── 01_enojo_sucio.mp4      (Toma 1: Furia volcánica, maza, reactividad tóxica)
+│   ├── 02_enojo_limpio.mp4     (Toma 2: Guardián con escudo y corazón palpitante)
+│   ├── 03_mirada_lucia.mp4     (Toma 3: Lucía regulándose con respiración somática)
+│   └── 04_cierre_end.mp4       (Toma 4: Cathy Calderón y la pregunta reflexiva)
+│
+├── VERSION_BELLA/              -> VERSIÓN RECOMENDADA (Voz cálida y humana)
+│   ├── 00_MASTER_45S_BELLA.mp3 (Master continuo de 45 segundos con voces + SFX mezclados)
+│   ├── 01_TOMA1_enojo_sucio.mp3 (11.1s)
+│   ├── 02_TOMA2_enojo_limpio.mp3 (14.7s)
+│   ├── 03_TOMA3_mirada_lucia.mp3 (6.4s)
+│   └── 04_TOMA4_cierre_pregunta.mp3 (6.8s)
+│
+├── VERSION_SARAH/              -> VERSIÓN ALTERNATIVA (Voz más pausada y solemne)
+│   ├── 00_MASTER_45S_SARAH.mp3 (Master continuo de 46 segundos con voces + SFX mezclados)
+│   ├── 01_TOMA1_enojo_sucio.mp3 (12.3s)
+│   ├── 02_TOMA2_enojo_limpio.mp3 (17.0s)
+│   ├── 03_TOMA3_mirada_lucia.mp3 (7.4s)
+│   └── 04_TOMA4_cierre_pregunta.mp3 (7.5s)
+│
+└── SFX_PACK/                   -> Efectos de sonido orgánicos a 48kHz (sin ruido de fondo)
+    ├── sfx_01_enojo_sucio_maza_lava.wav / .mp3 (Impactos pesados con cuerpo sub-bass)
+    ├── sfx_02_enojo_limpio_latido_60bpm.wav / .mp3 (Latido cardíaco 60 BPM puro)
+    ├── sfx_03_lucia_respiro_magico.wav / .mp3 (Campanillas pentatónicas cálidas)
+    └── sfx_04_cierre_acorde_dorado.wav / .mp3 (Acorde cinematográfico de resolución)
+
+--------------------------------------------------------------------------------
+2. MAPEO TIMELINE ESCENA POR ESCENA (45 SEGUNDOS):
+--------------------------------------------------------------------------------
+
+[ESCENA 1: 0:00 - 0:11] -> ENOJO SUCIO (LA HERIDA)
+• Video: CLIPS_VIDEO_720P/01_enojo_sucio.mp4
+• Audio Locución: 01_TOMA1_enojo_sucio.mp3
+  Guión: "Cuando corregimos desde la reactividad y la humillación, el límite se convierte en herida. El Enojo Sucio contamina el vínculo y apaga el aprendizaje infantil por miedo."
+• SFX: sfx_01_enojo_sucio_maza_lava (Impactos pesados sutiles en fondo)
+• Criterio Grok: Transición visual a los 11s con cross-fade oscuro o disolución hacia la luz.
+
+[ESCENA 2: 0:11 - 0:25] -> ENOJO LIMPIO (EL LÍMITE SANO)
+• Video: CLIPS_VIDEO_720P/02_enojo_limpio.mp4
+• Audio Locución: 02_TOMA2_enojo_limpio.mp3
+  Guión: "Pero el enojo no se reprime: es energía vital para frenar la injusticia. Cuando nace desde el respeto, se convierte en Enojo Limpio: sostiene el límite con firmeza, manteniendo el corazón abierto y el apego a salvo."
+• SFX: sfx_02_enojo_limpio_latido_60bpm (Latido fisiológico de 60 BPM sutil de fondo)
+• Criterio Grok: Alargar clip 2 con cámara lenta o loop sutil si se requiere cubrir los ~14s de habla.
+
+[ESCENA 3: 0:25 - 0:35] -> MIRADA DE LUCÍA (LA REGULACIÓN)
+• Video: CLIPS_VIDEO_720P/03_mirada_lucia.mp4
+• Audio Locución: 03_TOMA3_mirada_lucia.mp3
+  Guión: "El niño no necesita que le quiten el enojo; necesita aprender a poner límites sin lastimar a los que ama."
+• SFX: sfx_03_lucia_respiro_magico (Respiro sutil y campanillas de regulación)
+
+[ESCENA 4: 0:35 - 0:45] -> CIERRE Y PREGUNTA ANCLA
+• Video: CLIPS_VIDEO_720P/04_cierre_end.mp4
+• Audio Locución: 04_TOMA4_cierre_pregunta.mp3
+  Guión: "En la familia y en el espacio terapéutico... ¿desde cuál estamos interviniendo? ¿A cuál decides alimentar hoy?"
+• SFX: sfx_04_cierre_acorde_dorado (Resolución armónica cálida en el fade out)
+
+--------------------------------------------------------------------------------
+3. OPCIÓN DE MONTAJE RÁPIDO:
+--------------------------------------------------------------------------------
+Si Grok ensambla el video completo en una sola pista:
+1. Utilizar directamente "00_MASTER_45S_BELLA.mp3" como pista de audio principal.
+2. Concatenar los 4 clips con transiciones de disolución cruzada (0.5s).
+3. Asegurar salida en 1080p o 720p H.264 / AAC 256kbps.
+================================================================================

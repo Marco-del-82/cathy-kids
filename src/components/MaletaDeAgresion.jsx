@@ -16,7 +16,46 @@ export const MaletaDeAgresion = () => {
     { id: 8, text: "Cruzar brazos y avisar cuando esté listo", icon: "🤝" }
   ];
 
+  const playClick = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(580, ctx.currentTime);
+      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.07);
+    } catch {}
+  };
+
+  const playSuccess = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.9);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.12);
+        osc.stop(ctx.currentTime + idx * 0.12 + 0.9);
+      });
+    } catch {}
+  };
+
   const togglePhrase = (id) => {
+    playClick();
     let updated;
     if (selectedPhrases.includes(id)) {
       updated = selectedPhrases.filter((p) => p !== id);
@@ -27,6 +66,7 @@ export const MaletaDeAgresion = () => {
 
     if (updated.length >= 4) {
       setIsDeparted(true);
+      playSuccess();
     } else {
       setIsDeparted(false);
     }

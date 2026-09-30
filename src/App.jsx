@@ -8,57 +8,57 @@ import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
 import { ReguladorRelacional } from './components/ReguladorRelacional'
 import { ToolkitLeadForm } from './components/ToolkitLeadForm'
 import { PiedritaDeLaPaz } from './components/PiedritaDeLaPaz'
-import { LentesDeCuriosidad } from './components/LentesDeCuriosidad'
 import { MaletaDeAgresion } from './components/MaletaDeAgresion'
+import { CathyAuthorProfile } from './components/CathyAuthorProfile'
 
 const PHASES = [
   {
     id: 1,
-    timeRange: [0, 12.5],
+    timeRange: [0, 11.5],
     title: 'La Amenaza Neurobiológica',
-    subtitle: 'El Enojo Sucio y la Amígdala',
-    badge: 'Toma 1 • 00:00 - 00:12',
+    subtitle: 'El Enojo Sucio y la Herida',
+    badge: 'Toma 1 • 00:00 - 00:11',
     color: 'red',
     character: '/assets/enojo-sucio.jpg',
-    quote: '“Cuando intervenimos desde la reactividad, el límite se convierte en herida. El Enojo Sucio contamina el vínculo: el cerebro infantil deja de procesar el aprendizaje y entra en modo de alerta y miedo.”',
-    clinicalNote: 'El secuestro amigdalino apaga la corteza prefrontal del niño. La amenaza genera parálisis o huida (Vergüenza Tóxica), bloqueando toda integración cognitiva del límite.',
+    quote: '“Cuando corregimos desde la reactividad y la humillación, el límite se convierte en herida. El Enojo Sucio contamina el vínculo y apaga el aprendizaje infantil por miedo.”',
+    clinicalNote: 'El secuestro amigdalino apaga la corteza prefrontal del niño. La humillación y el miedo bloquean la integración del límite, activando respuestas de defensa.',
     metric: 'Modo Supervivencia Activado'
   },
   {
     id: 2,
-    timeRange: [12.5, 25.5],
-    title: 'La Regulación y el Apego Seguro',
-    subtitle: 'El Enojo Limpio y la Corregulación',
-    badge: 'Toma 2 • 00:12 - 00:25',
+    timeRange: [11.5, 26.5],
+    title: 'La Regulación y el Límite Firme',
+    subtitle: 'El Enojo Limpio y el Apego a Salvo',
+    badge: 'Toma 2 • 00:11 - 00:26',
     color: 'blue',
     character: '/assets/enojo-limpio.jpg',
-    quote: '“Pero el enojo no tiene que reprimir su fuerza: es energía vital. Cuando nace desde el respeto, se convierte en Enojo Limpio. Tiene la firmeza para frenar la injusticia y sostener la estructura, manteniendo el corazón abierto y el apego a salvo.”',
-    clinicalNote: 'Firmeza sin agresión. El latido rítmico (60 BPM) promueve la regulación vagal del infante. El límite se asimila porque el vínculo de seguridad permanece intacto.',
+    quote: '“Pero el enojo no se reprime: es energía vital para frenar la injusticia. Cuando nace desde el respeto, se convierte en Enojo Limpio: sostiene el límite con firmeza, manteniendo el corazón abierto y el apego a salvo.”',
+    clinicalNote: 'Firmeza sin agresión. El latido fisiológico (60 BPM) promueve la regulación vagal. El límite se asimila porque el vínculo y el respeto mutuo permanecen intactos.',
     metric: 'Corregulación Vagal • 60 BPM'
   },
   {
     id: 3,
-    timeRange: [25.5, 37.5],
-    title: 'El Futuro Clínico: Speech Emotion AI',
-    subtitle: 'El Regulador Relacional Inteligente',
-    badge: 'Toma 3 • 00:25 - 00:37',
+    timeRange: [26.5, 35.0],
+    title: 'La Mirada Consciente de Lucía',
+    subtitle: 'El Niño y sus Herramientas Somáticas',
+    badge: 'Toma 3 • 00:26 - 00:35',
     color: 'amber',
-    character: 'iot-mockup',
-    quote: '“Tecnología al servicio de la regulación familiar: monitoreo ambiental y alertas compasivas para intervenir antes de que la reactividad contamine la mesa.”',
-    clinicalNote: 'Prototipo de escucha ambiental pasiva en el Edge (Whisper + SLM local). Detecta decibeles y prosodia hostil para inducir pausas compasivas en el núcleo familiar.',
-    metric: 'Detección de Tono en Tiempo Real'
+    character: '/assets/lucia.jpg',
+    quote: '“El niño no necesita que le quiten el enojo; necesita aprender a poner límites sin lastimar a los que ama.”',
+    clinicalNote: 'Respiración somática e integración emocional. En lugar de patologizar el enojo, se dota al menor de herramientas para delimitar con seguridad afectiva.',
+    metric: 'Regulación Somática Consciente'
   },
   {
     id: 4,
-    timeRange: [37.5, 46.0],
-    title: 'Cierre y Detonador Terapéutico',
-    subtitle: 'La Pregunta para el Foro Clínico',
-    badge: 'Toma 4 • 00:37 - 00:45',
+    timeRange: [35.0, 45.0],
+    title: 'Cierre y Reflexión Terapéutica',
+    subtitle: 'La Pregunta Ancla para el Foro Clínico',
+    badge: 'Toma 4 • 00:35 - 00:45',
     color: 'emerald',
     character: '/assets/lucia.jpg',
-    quote: '“En la familia y en el espacio terapéutico... ¿desde cuál de los dos estamos interviniendo? ¿A cuál decidimos alimentar hoy?”',
-    clinicalNote: 'Cathy Calderón de la Barca. Herramientas clínicas y literatura terapéutica para una crianza con apego seguro y límites conscientes.',
-    metric: '¿Límites que hieren o con respeto?'
+    quote: '“En la familia y en el espacio terapéutico... ¿desde cuál estamos interviniendo? ¿A cuál decides alimentar hoy?”',
+    clinicalNote: 'Cathy Calderón de la Barca. Herramientas clínicas, psicoeducación y literatura terapéutica para una crianza con apego seguro y límites conscientes.',
+    metric: 'Anclaje Terapéutico y Crianza'
   }
 ]
 
@@ -242,11 +242,26 @@ export default function App() {
   }
 
   const toggleFullscreen = () => {
-    if (!cinemaContainerRef.current) return
-    if (!document.fullscreenElement) {
-      cinemaContainerRef.current.requestFullscreen().catch(console.error)
+    const el = cinemaContainerRef.current
+    const video = videoRef.current
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+
+    if (!isFs) {
+      if (el?.requestFullscreen) {
+        el.requestFullscreen().catch(() => {
+          video?.webkitEnterFullscreen?.()
+        })
+      } else if (el?.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen()
+      } else if (video?.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen()
+      }
     } else {
-      document.exitFullscreen().catch(console.error)
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(console.error)
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen()
+      }
     }
   }
 
@@ -285,6 +300,7 @@ export default function App() {
             <a href="#laboratorio" className="hover:text-blue-400 transition-colors">Laboratorio</a>
             <a href="#regulador" className="hover:text-emerald-400 transition-colors">Sensor en Vivo</a>
             <a href="#libro" className="hover:text-blue-400 transition-colors">El Libro</a>
+            <a href="#autora" className="hover:text-amber-400 transition-colors">Autora & Redes</a>
           </nav>
 
           <a
@@ -582,7 +598,6 @@ export default function App() {
 
         <div className="space-y-16">
           <PiedritaDeLaPaz />
-          <LentesDeCuriosidad />
           <MaletaDeAgresion />
         </div>
       </section>
@@ -759,13 +774,37 @@ export default function App() {
       {/* SECTION 5: ACCESO CLÍNICO Y ENTREGA DE TOOLKIT (WHATSAPP + PDF) */}
       <ToolkitLeadForm />
 
+      {/* SECTION 6: AUTORA Y REDES SOCIALES OFICIALES */}
+      <CathyAuthorProfile />
+
       {/* FOOTER */}
-      <footer className="border-t border-white/10 py-10 px-6 text-center text-xs text-slate-500 space-y-2">
+      <footer className="border-t border-white/10 py-12 px-6 text-center text-xs text-slate-400 space-y-4 bg-[#05070b]">
+        <div className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-6 text-sm font-medium text-slate-300">
+          <a href="https://cathycdelabarca.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors flex items-center gap-1.5">
+            <span>Sitio Web Oficial</span>
+          </a>
+          <span className="text-white/20">•</span>
+          <a href="https://www.instagram.com/cathycdelabarca" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
+            <span>Instagram (@cathycdelabarca)</span>
+          </a>
+          <span className="text-white/20">•</span>
+          <a href="https://www.youtube.com/@cathycdelabarca" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors">
+            <span>YouTube (Cathy C de la Barca)</span>
+          </a>
+          <span className="text-white/20">•</span>
+          <a href="https://www.facebook.com/cathycdelabarca" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
+            <span>Facebook</span>
+          </a>
+          <span className="text-white/20">•</span>
+          <a href="https://www.linkedin.com/in/cathy-c-de-la-barca-7492a355/" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400 transition-colors">
+            <span>LinkedIn</span>
+          </a>
+        </div>
         <p className="text-slate-400 font-medium">
-          © 2026 Cathy Kids • Cathy Calderón de la Barca • <span className="text-blue-400">cathykids.club</span>
+          © 2026 Cathy Kids • Dra. Cathy Calderón de la Barca • <span className="text-blue-400">cathykids.club</span>
         </p>
-        <p>
-          Infraestructura de Inferencia y Alta Disponibilidad soportada por <strong>SEYER Distributed Architecture</strong>.
+        <p className="text-slate-600 text-[11px]">
+          Desarrollo, Narrativa Clínica y Alta Disponibilidad soportada por <strong>SEYER Distributed Architecture</strong>.
         </p>
       </footer>
     </div>
