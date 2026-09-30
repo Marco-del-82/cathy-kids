@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Play, Pause, Sparkles, Flame, ShieldCheck } from 'lucide-react';
+import { Play, Pause, Sparkles, Flame, ShieldCheck, HeartCrack, Eye, Luggage, Wand2 } from 'lucide-react';
 
 export const CharacterVoiceSelector = () => {
   const [playingId, setPlayingId] = useState(null);
@@ -8,56 +8,140 @@ export const CharacterVoiceSelector = () => {
   const characters = [
     {
       id: 'lucia',
-      name: 'Lucía (La Protagonista)',
-      role: 'Infante en búsqueda de corregulación',
+      name: 'Lucía (La Domadora)',
+      ageTag: '6 Años • Protagonista Valiente',
+      role: 'Aprende a transformar la tormenta en valentía y límites firmes',
       quote: '"A veces siento que el enojo me atrapa... pero no quiero lastimar a los que amo."',
       audioSrc: '/audio/lucia_voice.mp3',
-      voiceName: 'Voz Dulce / Infantil (Paloma Neural +15Hz)',
+      voiceName: 'Voz Dulce / Infantil',
+      image: '/assets/lucia_3d.jpg',
+      magicPower: 'Báculo de Domadora y Piedrita de la Paz',
+      secretMessage: 'Al mirar a mamá y papá a los ojos con valentía, la vergüenza se disuelve.',
       theme: {
         border: 'border-amber-400/40 hover:border-amber-400',
         badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-400/30',
-        glow: 'from-amber-500/20 to-orange-500/5',
+        glow: 'from-amber-500/25 to-yellow-500/10',
         button: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950',
-        avatarBg: 'bg-gradient-to-tr from-amber-400 to-orange-300 text-slate-900',
         icon: Sparkles
       }
     },
     {
-      id: 'enojo_sucio',
-      name: 'Enojo Sucio (El Volcán)',
-      role: 'Alerta reactiva y límite que hiere',
-      quote: '"¡Todo me molesta! ¡Si me hieren, yo grito más fuerte para defenderme!"',
-      audioSrc: '/audio/enojo_sucio_voice.mp3',
-      voiceName: 'Voz Áspera / Acelerada (Jorge Neural -8Hz)',
-      theme: {
-        border: 'border-rose-500/40 hover:border-rose-500',
-        badgeBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-        glow: 'from-rose-600/25 to-red-950/20',
-        button: 'bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white',
-        avatarBg: 'bg-gradient-to-tr from-rose-600 to-red-700 text-white',
-        icon: Flame
-      }
-    },
-    {
       id: 'enojo_limpio',
-      name: 'Enojo Limpio (La Fuerza)',
-      role: 'Asertividad, estructura y amor',
+      name: 'Enojo Limpio',
+      ageTag: 'El Guardián con Corazón',
+      role: 'Firmeza con valores, respeto y amor que cuida sin lastimar',
       quote: '"El enojo no es para destruir; es mi fuerza para poner límites con amor y cuidar nuestro corazón."',
       audioSrc: '/audio/enojo_limpio_voice.mp3',
-      voiceName: 'Voz Cálida con Autoridad (Dalia Neural -2Hz)',
+      voiceName: 'Voz Cálida con Autoridad',
+      image: '/assets/enojo_limpio_3d.jpg',
+      magicPower: 'Escudo de Luz y Corazón Abierto',
+      secretMessage: 'Dice ¡Para! y ¡No me gusta! con respeto, sin usar malas palabras.',
       theme: {
         border: 'border-cyan-400/40 hover:border-cyan-400',
         badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/30',
         glow: 'from-cyan-600/25 to-blue-950/20',
         button: 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white',
-        avatarBg: 'bg-gradient-to-tr from-cyan-500 to-blue-600 text-white',
         icon: ShieldCheck
+      }
+    },
+    {
+      id: 'enojo_sucio',
+      name: 'Enojo Sucio',
+      ageTag: 'El Erizo de Lava',
+      role: 'Púas, críticas y palabras hirientes que levantan un muro',
+      quote: '"¡Todo me molesta! ¡Si me hieren, yo grito más fuerte para defenderme!"',
+      audioSrc: '/audio/enojo_sucio_voice.mp3',
+      voiceName: 'Voz Áspera / Acelerada',
+      image: '/assets/enojo_sucio_3d.jpg',
+      magicPower: 'Bola de Púas de Metal sobre el Corazón',
+      secretMessage: 'Cree que atacar primero lo protegerá, pero solo lo deja solito.',
+      theme: {
+        border: 'border-rose-500/40 hover:border-rose-500',
+        badgeBg: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+        glow: 'from-rose-600/25 to-red-950/20',
+        button: 'bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white',
+        icon: Flame
+      }
+    },
+    {
+      id: 'berrinche',
+      name: 'Monstruo de los Berrinches',
+      ageTag: 'El Volcán Pataleta',
+      role: 'Sobrecarga física motora: el cuerpo actúa como un bebé sin control',
+      quote: '"¡La cabeza me arde como volcán! ¡El cuerpo no me responde y solo quiero llorar y patalear!"',
+      audioSrc: '/audio/berrinche_voice.mp3',
+      voiceName: 'Voz Quebrada / Desbordada',
+      image: '/assets/berrinche_3d.jpg',
+      magicPower: 'Cresta de Dinosaurio y Lágrimas Gigantes',
+      secretMessage: 'Necesita saltar, sacudirse y 4 respiraciones profundas para liberar la lava.',
+      theme: {
+        border: 'border-blue-500/40 hover:border-blue-500',
+        badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+        glow: 'from-blue-600/25 to-indigo-950/20',
+        button: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white',
+        icon: HeartCrack
+      }
+    },
+    {
+      id: 'agresion',
+      name: 'La Agresión',
+      ageTag: 'El Monstruo de las Maletas',
+      role: 'Golpes y patadas impulsivas que empacan sus maletas al haber límites',
+      quote: '"¡Tenía ganas de patear! Pero cuando me ponen límites con respeto, ¡tomo mis maletas y me voy!"',
+      audioSrc: '/audio/agresion_voice.mp3',
+      voiceName: 'Voz Ronca con Cresta Punk',
+      image: '/assets/agresion_3d.jpg',
+      magicPower: 'Cresta Verde Punk y Maleta con Rueditas',
+      secretMessage: 'En un hogar con acuerdos y respeto, la agresión ya no tiene lugar y se despide.',
+      theme: {
+        border: 'border-emerald-500/40 hover:border-emerald-500',
+        badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+        glow: 'from-emerald-600/25 to-teal-950/20',
+        button: 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white',
+        icon: Luggage
+      }
+    },
+    {
+      id: 'verguenza',
+      name: 'Vergüenza Tóxica',
+      ageTag: 'El Avestruz Escondido',
+      role: 'Hace creer al niño que es defectuoso, malo y que nadie lo va a querer',
+      quote: '"Meto mi cabeza en la tierra... siento que soy una niña mala y que ya no merezco cariño."',
+      audioSrc: '/audio/verguenza_voice.mp3',
+      voiceName: 'Voz Tímida / En un Susurro',
+      image: '/assets/verguenza_toxica.jpg',
+      magicPower: 'Plumas Pastel y Nido de Arena',
+      secretMessage: 'Se disuelve cuando papá y mamá regalan una sonrisa y un abrazo que repara.',
+      theme: {
+        border: 'border-purple-400/40 hover:border-purple-400',
+        badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-400/30',
+        glow: 'from-purple-600/25 to-pink-950/20',
+        button: 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white',
+        icon: Eye
+      }
+    },
+    {
+      id: 'curiosidad',
+      name: 'La Curiosidad',
+      ageTag: 'El Hada de los Lentes Mágicos',
+      role: 'Mira con asombro sin juzgar, revelando los mensajes de amor ocultos',
+      quote: '"¡Ponte mis lentes mágicos! Detrás del enojo siempre hay tristeza, soledad o ganas de ser amado."',
+      audioSrc: '/audio/curiosidad_voice.mp3',
+      voiceName: 'Voz Cristalina / Mágica',
+      image: '/assets/curiosidad_lentes.jpg',
+      magicPower: 'Lentes Arcoíris y Lente Estelar',
+      secretMessage: 'Convierte el juicio en comprensión y le abre la puerta a la Empatía.',
+      theme: {
+        border: 'border-fuchsia-400/40 hover:border-fuchsia-400',
+        badgeBg: 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-400/30',
+        glow: 'from-fuchsia-600/25 to-pink-950/20',
+        button: 'bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 text-white',
+        icon: Wand2
       }
     }
   ];
 
   const togglePlay = (id) => {
-    // Si ya está sonando otro, detenerlo
     if (playingId && playingId !== id && audioRefs.current[playingId]) {
       audioRefs.current[playingId].pause();
       audioRefs.current[playingId].currentTime = 0;
@@ -84,20 +168,21 @@ export const CharacterVoiceSelector = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <div className="text-center mb-10">
-        <span className="text-xs uppercase tracking-widest font-mono text-cyan-400 bg-cyan-950/50 border border-cyan-800 px-3 py-1 rounded-full">
-          Identidad Sonora y Psicoeducativa
+    <div className="max-w-7xl mx-auto px-4 py-16">
+      <div className="text-center mb-12">
+        <span className="text-xs uppercase tracking-widest font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-700/50 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-lg">
+          <Sparkles className="w-3.5 h-3.5 text-yellow-400 animate-spin" style={{ animationDuration: '6s' }} />
+          El Universo Emocional • Cathy Kids
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-3 mb-2">
-          Las 3 Voces del Relato
+        <h2 className="text-3xl sm:text-5xl font-black text-white mt-4 mb-3 tracking-tight font-heading">
+          Los 7 Personajes del Cuento
         </h2>
-        <p className="text-slate-300 max-w-2xl mx-auto text-sm sm:text-base">
-          Cada personaje fue modulado con un timbre acústico único para reflejar su estado neurobiológico y facilitar la identificación emocional en niños y adultos.
+        <p className="text-slate-300 max-w-3xl mx-auto text-sm sm:text-base leading-relaxed">
+          Diseñados a partir del manuscrito clínico de <strong>Cathy Calderón de la Barca</strong>. Cada criatura representa un estado fisiológico real, con su voz acústica y su llave de transformación mágica.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {characters.map((char) => {
           const Icon = char.theme.icon;
           const isPlaying = playingId === char.id;
@@ -105,40 +190,63 @@ export const CharacterVoiceSelector = () => {
           return (
             <div
               key={char.id}
-              className={`relative rounded-3xl p-6 border bg-slate-900/80 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
-                isPlaying ? 'scale-[1.02] shadow-2xl' : 'hover:scale-[1.01]'
+              className={`group relative rounded-3xl p-5 border bg-slate-900/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
+                isPlaying ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
               }`}
             >
-              {/* Glow superior de fondo */}
-              <div className={`absolute top-0 right-0 w-48 h-48 bg-gradient-to-br ${char.theme.glow} rounded-full blur-2xl pointer-events-none`} />
+              {/* Glow ambiental */}
+              <div className={`absolute top-0 right-0 w-44 h-44 bg-gradient-to-br ${char.theme.glow} rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity`} />
 
               <div>
-                {/* Header de la tarjeta */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${char.theme.badgeBg}`}>
-                    {char.voiceName}
-                  </span>
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${char.theme.avatarBg}`}>
-                    <Icon className="w-5 h-5" />
+                {/* Imagen del Personaje en Estilo 3D Storybook */}
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all">
+                  <img
+                    src={char.image}
+                    alt={char.name}
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute top-2.5 left-2.5">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md ${char.theme.badgeBg}`}>
+                      {char.ageTag}
+                    </span>
+                  </div>
+                  <div className="absolute bottom-2.5 right-2.5">
+                    <div className="w-8 h-8 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+                      <Icon className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-black text-white mb-1">
-                  {char.name}
-                </h3>
-                <p className="text-xs text-slate-400 mb-4 font-mono">
+                <div className="mb-2">
+                  <h3 className="text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                    {char.name}
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono mt-0.5 line-clamp-1">
+                    {char.voiceName}
+                  </p>
+                </div>
+
+                <p className="text-xs text-slate-300 mb-3 leading-snug line-clamp-2">
                   {char.role}
                 </p>
 
-                {/* Diálogo / Cita */}
-                <div className="bg-slate-950/70 border border-white/5 rounded-2xl p-4 mb-6 relative">
-                  <p className="text-sm italic text-slate-200 leading-relaxed">
+                {/* Diálogo del Cuento */}
+                <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3 mb-3 relative">
+                  <p className="text-xs italic text-slate-200 leading-relaxed">
                     {char.quote}
                   </p>
                 </div>
+
+                {/* Llave Mágica / Mensaje Secreto */}
+                <div className="bg-blue-950/30 border border-blue-500/20 rounded-xl p-2.5 mb-4 text-[11px] text-blue-200 flex items-start gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 shrink-0 mt-0.5" />
+                  <span className="leading-tight">
+                    <strong>Poder:</strong> {char.secretMessage}
+                  </span>
+                </div>
               </div>
 
-              {/* Botón de reproducción y audio tag */}
+              {/* Controles de Audio */}
               <div>
                 <audio
                   ref={(el) => (audioRefs.current[char.id] = el)}
@@ -149,22 +257,22 @@ export const CharacterVoiceSelector = () => {
 
                 <button
                   onClick={() => togglePlay(char.id)}
-                  className={`w-full py-3 px-4 rounded-xl font-black flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${char.theme.button}`}
+                  className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${char.theme.button}`}
                 >
                   {isPlaying ? (
                     <>
-                      <Pause className="w-4 h-4 fill-current" />
+                      <Pause className="w-3.5 h-3.5 fill-current" />
                       <span>Detener Voz</span>
-                      <span className="flex gap-0.5 ml-2 items-end h-4">
-                        <span className="w-1 bg-current animate-pulse h-3" />
-                        <span className="w-1 bg-current animate-pulse delay-75 h-4" />
-                        <span className="w-1 bg-current animate-pulse delay-150 h-2" />
+                      <span className="flex gap-0.5 ml-2 items-end h-3.5">
+                        <span className="w-1 bg-current animate-pulse h-2.5" />
+                        <span className="w-1 bg-current animate-pulse delay-75 h-3.5" />
+                        <span className="w-1 bg-current animate-pulse delay-150 h-1.5" />
                       </span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-4 h-4 fill-current" />
-                      <span>Escuchar Diálogo</span>
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <span>Escuchar Voz Real</span>
                     </>
                   )}
                 </button>

@@ -6,6 +6,9 @@ import {
 import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
 import { ReguladorRelacional } from './components/ReguladorRelacional'
 import { ToolkitLeadForm } from './components/ToolkitLeadForm'
+import { PiedritaDeLaPaz } from './components/PiedritaDeLaPaz'
+import { LentesDeCuriosidad } from './components/LentesDeCuriosidad'
+import { MaletaDeAgresion } from './components/MaletaDeAgresion'
 
 const PHASES = [
   {
@@ -201,7 +204,8 @@ export default function App() {
 
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
             <a href="#teaser-capsula" className="hover:text-blue-400 transition-colors">Cápsula 45s</a>
-            <a href="#voces" className="hover:text-cyan-400 transition-colors">3 Voces</a>
+            <a href="#voces" className="hover:text-cyan-400 transition-colors">Voces</a>
+            <a href="#rituales-magicos" className="hover:text-amber-400 transition-colors">Rituales Mágicos</a>
             <a href="#laboratorio" className="hover:text-blue-400 transition-colors">Laboratorio</a>
             <a href="#regulador" className="hover:text-emerald-400 transition-colors">Sensor en Vivo</a>
             <a href="#libro" className="hover:text-blue-400 transition-colors">El Libro</a>
@@ -409,9 +413,30 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION: LAS 3 VOCES DE LOS PERSONAJES */}
+      {/* SECTION: VOCES DE LOS PERSONAJES */}
       <section id="voces" className="py-8 bg-[#080b11] border-t border-white/5">
         <CharacterVoiceSelector />
+      </section>
+
+      {/* SECTION: RITUALES MÁGICOS Y EXPERIENCIAS SENSORIALES DEL CUENTO */}
+      <section id="rituales-magicos" className="py-16 bg-[#07090f] border-t border-white/5 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 mb-12 text-center">
+          <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase tracking-wider">
+            Pensamiento Mágico & Herramientas Somáticas
+          </span>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mt-3 font-heading">
+            Experiencias Interactivas del Cuento
+          </h2>
+          <p className="text-slate-400 max-w-2xl mx-auto mt-3 text-sm md:text-base">
+            Los anclajes tangibles creados por Cathy Calderón para transformar la reactividad en conexión lúdica y regulación somática.
+          </p>
+        </div>
+
+        <div className="space-y-16">
+          <PiedritaDeLaPaz />
+          <LentesDeCuriosidad />
+          <MaletaDeAgresion />
+        </div>
       </section>
 
       {/* SECTION 2: LABORATORIO CLÍNICO INTERACTIVO */}
