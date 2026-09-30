@@ -311,7 +311,6 @@ export default function App() {
   }
 
   const toggleFullscreen = () => {
-    const el = cinemaContainerRef.current
     const video = videoRef.current
     const isFs = !!(
       document.fullscreenElement ||
@@ -320,29 +319,26 @@ export default function App() {
       video?.webkitDisplayingFullscreen
     )
 
-    const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-
     if (!isFs) {
-      if (isMobile && video) {
-        // En móviles (Android / iOS): pantalla completa directa sobre el video para soporte nativo y rotación automática
+      if (video) {
+        // En todos los dispositivos (PC, Mac laptop, Android, iOS): pantalla completa directa sobre el video
+        // para cobertura 100% en proyectores/monitores externos y controles de transporte nativos
         if (video.requestFullscreen) {
           video.requestFullscreen().catch(() => {
-            if (video.webkitEnterFullscreen) video.webkitEnterFullscreen()
+            if (video.webkitRequestFullscreen) {
+              video.webkitRequestFullscreen()
+            } else if (video.webkitEnterFullscreen) {
+              video.webkitEnterFullscreen()
+            } else if (cinemaContainerRef.current?.requestFullscreen) {
+              cinemaContainerRef.current.requestFullscreen()
+            }
           })
+        } else if (video.webkitRequestFullscreen) {
+          video.webkitRequestFullscreen()
         } else if (video.webkitEnterFullscreen) {
           video.webkitEnterFullscreen()
-        }
-      } else {
-        // En PC / Escritorio: pantalla completa sobre el marco cinemático completo
-        if (el?.requestFullscreen) {
-          el.requestFullscreen().catch(() => {
-            if (video?.requestFullscreen) video.requestFullscreen()
-            else if (video?.webkitEnterFullscreen) video.webkitEnterFullscreen()
-          })
-        } else if (video?.requestFullscreen) {
-          video.requestFullscreen()
-        } else if (video?.webkitEnterFullscreen) {
-          video.webkitEnterFullscreen()
+        } else if (cinemaContainerRef.current?.requestFullscreen) {
+          cinemaContainerRef.current.requestFullscreen()
         }
       }
     } else {
@@ -466,14 +462,15 @@ export default function App() {
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
                   ref={videoRef}
-                  src="/video/cortometraje_45s.mp4?v=20260930_master_final"
+                  src="/video/cortometraje_45s.mp4?v=20260930_sfx_master_v2"
                   poster="/assets/lucia.jpg"
                   playsInline
                   webkit-playsinline="true"
+                  controls={isFullscreen}
                   disableRemotePlayback
                   disablePictureInPicture
                   x-webkit-airplay="deny"
-                  controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
+                  controlsList="nodownload noplaybackrate noremoteplayback"
                   preload="auto"
                   onClick={togglePlay}
                   className="w-full h-full object-contain cursor-pointer"

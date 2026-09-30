@@ -117,3 +117,26 @@ video::-internal-media-controls-overlay-cast-button {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+
+/* Pantalla completa universal para video (Mac laptop, PC, proyectores): 100% viewport, ratio 16:9 y fondo negro puro */
+video:fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  object-fit: contain !important;
+  background-color: #000000 !important;
+}
+
+video:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  object-fit: contain !important;
+  background-color: #000000 !important;
+}
+
+video::backdrop {
+  background-color: #000000 !important;
+}
