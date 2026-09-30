@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  Play, Pause, RotateCcw, Volume2, VolumeX, Maximize2, Minimize2,
+  Play, Pause, Square, RotateCcw, Volume2, VolumeX, Maximize2, Minimize2,
   Heart, Sparkles, BookOpen, Brain, Activity, CheckCircle2, Radio,
-  Film, MonitorPlay, Subtitles
+  Film, MonitorPlay, Subtitles, Tv
 } from 'lucide-react'
 import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
 import { ReguladorRelacional } from './components/ReguladorRelacional'
@@ -107,10 +107,9 @@ export default function App() {
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [showSubtitles, setShowSubtitles] = useState(true)
-  const [viewMode, setViewMode] = useState('cine') // 'cine' | 'lab'
   const [isFullscreen, setIsFullscreen] = useState(false)
 
-  // Media synchronization effect
+  // Media synchronization and projector keyboard controls
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -138,52 +137,105 @@ export default function App() {
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
 
+    // Atajos de teclado para Presentación en Proyector
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return
+
+      if (e.code === 'Space') {
+        e.preventDefault()
+        togglePlay()
+      } else if (e.key === 's' || e.key === 'S' || e.key === 'Escape') {
+        e.preventDefault()
+        stopMedia()
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault()
+        toggleFullscreen()
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault()
+        toggleMute()
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.min(duration, videoRef.current.currentTime + 5)
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        if (videoRef.current) {
+          videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 5)
+        }
+      } else if (['1', '2', '3', '4'].includes(e.key)) {
+        jumpToPhase(parseInt(e.key, 10) - 1)
+      }
+    }
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate)
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
+      window.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
 
   const togglePlay = () => {
-    if (!videoRef.current) return
-    if (isPlaying) {
-      videoRef.current.pause()
+    const v = videoRef.current
+    if (!v) return
+    if (v.paused) {
+      v.play().catch(console.error)
     } else {
-      videoRef.current.play().catch(() => {})
+      v.pause()
     }
+  }
+
+  const stopMedia = () => {
+    const v = videoRef.current
+    if (!v) return
+    v.pause()
+    v.currentTime = 0
+    setIsPlaying(false)
+    setCurrentTime(0)
+    setActivePhaseIndex(0)
   }
 
   const restartMedia = () => {
-    if (!videoRef.current) return
-    videoRef.current.currentTime = 0
-    videoRef.current.play().catch(() => {})
+    const v = videoRef.current
+    if (!v) return
+    v.currentTime = 0
+    v.play().catch(console.error)
   }
 
   const jumpToPhase = (index) => {
-    if (!videoRef.current) return
+    const v = videoRef.current
+    if (!v) return
     const targetTime = PHASES[index].timeRange[0]
-    videoRef.current.currentTime = targetTime
+    v.currentTime = targetTime
     setActivePhaseIndex(index)
-    if (!isPlaying) {
-      videoRef.current.play().catch(() => {})
-    }
+    v.play().catch(console.error)
   }
 
   const toggleMute = () => {
-    if (!videoRef.current) return
-    videoRef.current.muted = !videoRef.current.muted
-    setIsMuted(videoRef.current.muted)
+    const v = videoRef.current
+    if (!v) return
+    v.muted = !v.muted
+    setIsMuted(v.muted)
   }
 
   const handleScrub = (e) => {
-    if (!videoRef.current) return
+    const v = videoRef.current
+    if (!v) return
     const rect = e.currentTarget.getBoundingClientRect()
     const clickX = e.clientX - rect.left
     const newRatio = Math.max(0, Math.min(1, clickX / rect.width))
     const newTime = newRatio * duration
-    videoRef.current.currentTime = newTime
+    v.currentTime = newTime
     setCurrentTime(newTime)
     const phaseIdx = PHASES.findIndex(p => newTime >= p.timeRange[0] && newTime < p.timeRange[1])
     if (phaseIdx !== -1) setActivePhaseIndex(phaseIdx)
@@ -192,9 +244,9 @@ export default function App() {
   const toggleFullscreen = () => {
     if (!cinemaContainerRef.current) return
     if (!document.fullscreenElement) {
-      cinemaContainerRef.current.requestFullscreen().then(() => setIsFullscreen(true)).catch(() => {})
+      cinemaContainerRef.current.requestFullscreen().catch(console.error)
     } else {
-      document.exitFullscreen().then(() => setIsFullscreen(false)).catch(() => {})
+      document.exitFullscreen().catch(console.error)
     }
   }
 
@@ -270,31 +322,7 @@ export default function App() {
             El enojo no es una conducta que se reprime: es un estado del sistema nervioso que conecta o fractura el apego familiar.
           </p>
 
-          {/* VIEW MODE TOGGLE BUTTONS */}
-          <div className="inline-flex p-1.5 rounded-2xl bg-slate-900/90 border border-white/10 mb-6 shadow-xl">
-            <button
-              onClick={() => setViewMode('cine')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                viewMode === 'cine'
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Film className="w-4 h-4" />
-              <span>🎬 Cortometraje 45s (Video 4K)</span>
-            </button>
-            <button
-              onClick={() => setViewMode('lab')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
-                viewMode === 'lab'
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-lg shadow-amber-500/25 font-black'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <MonitorPlay className="w-4 h-4" />
-              <span>🔬 Laboratorio Sincronizado</span>
-            </button>
-          </div>
+
 
           {/* MAIN CINE VIDEO PLAYER CONSOLE */}
           <div
@@ -307,332 +335,228 @@ export default function App() {
             }`}
           >
             {/* Top Video Header HUD */}
-            <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10 mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 mb-4">
               <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full animate-ping ${
+                <div className={`w-3.5 h-3.5 rounded-full ${
                   isPlaying
-                    ? activePhase.color === 'red' ? 'bg-red-400' :
-                      activePhase.color === 'blue' ? 'bg-blue-400' :
-                      activePhase.color === 'amber' ? 'bg-amber-400' : 'bg-emerald-400'
-                    : 'bg-slate-500'
+                    ? activePhase.color === 'red' ? 'bg-red-400 animate-ping' :
+                      activePhase.color === 'blue' ? 'bg-blue-400 animate-ping' :
+                      activePhase.color === 'amber' ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-ping'
+                    : 'bg-rose-500 ring-2 ring-rose-400/40'
                 }`} />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-white text-sm sm:text-base">
+                    <span className="font-extrabold text-white text-sm sm:text-base tracking-wide">
                       {activePhase.badge}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
+                    <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200">
                       {activePhase.title}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="hidden sm:inline-block text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  4K UHD • Grok 3D Master
+              {/* Atajos de Teclado & Timecode para Proyector */}
+              <div className="flex items-center gap-2.5">
+                <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-400 bg-slate-900/90 px-3 py-1 rounded-lg border border-white/10">
+                  <span className="text-amber-400 font-bold">[Espacio]</span> Play/Pausa • <span className="text-rose-400 font-bold">[S]</span> Stop • <span className="text-blue-400 font-bold">[F]</span> Fullscreen
                 </span>
-                <span className="text-xs font-mono font-bold text-slate-200 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-white/10">
-                  {Math.floor(currentTime)}s <span className="text-slate-500">/ 45s</span>
+                <span className="text-sm font-mono font-black text-amber-400 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-amber-500/30 shadow-inner">
+                  {Math.floor(currentTime)}s <span className="text-slate-500 font-normal">/ 45s</span>
                 </span>
               </div>
             </div>
 
-            {viewMode === 'cine' ? (
-              /* MODO CINE: VIDEO PLAYER COMPLETO */
-              <div className="space-y-4">
-                {/* Cinema Screen Frame */}
-                <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
-                  <video
-                    ref={videoRef}
-                    src="/video/cortometraje_45s.mp4?v=3"
-                    poster="/assets/lucia.jpg"
-                    playsInline
-                    preload="auto"
-                    onClick={togglePlay}
-                    className="w-full h-full object-cover cursor-pointer"
-                  />
+            {/* CINEMA SCREEN AND PROJECTOR CONSOLE */}
+            <div className="space-y-4">
+              {/* Cinema Screen Frame */}
+              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
+                <video
+                  ref={videoRef}
+                  src="/video/cortometraje_45s.mp4?v=3"
+                  poster="/assets/lucia.jpg"
+                  playsInline
+                  preload="auto"
+                  onClick={togglePlay}
+                  className="w-full h-full object-cover cursor-pointer"
+                />
 
-                  {/* Play Overlay when Paused */}
-                  {!isPlaying && (
-                    <div
-                      onClick={togglePlay}
-                      className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40"
-                    >
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/50 hover:scale-110 active:scale-95 transition-all">
-                        <Play className="w-8 h-8 fill-current ml-1" />
-                      </div>
-                      <span className="mt-4 text-sm font-bold text-white tracking-wide drop-shadow-md">
-                        Reproducir Cortometraje (45s)
-                      </span>
-                      <span className="text-xs text-slate-400 mt-1 font-mono">
-                        Voz de Cathy Calderón • Audio Broadcast 24kHz
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Live Subtitle / Teleprompter Overlay */}
-                  {showSubtitles && (
-                    <div className="absolute bottom-3 left-4 right-4 pointer-events-none z-20">
-                      <div className="bg-slate-950/85 backdrop-blur-md p-3.5 rounded-xl border border-white/15 text-center shadow-2xl max-w-3xl mx-auto animate-fadeIn">
-                        <p className="text-xs sm:text-sm md:text-base font-semibold text-amber-300 drop-shadow leading-snug">
-                          {activePhase.quote}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Interactive Multi-Phase Timeline Scrubber */}
-                <div
-                  onClick={handleScrub}
-                  className="h-3 w-full bg-slate-900 rounded-full cursor-pointer relative overflow-hidden border border-white/10 group"
-                  title="Haz clic para avanzar en el video"
-                >
-                  {/* Progress Fill */}
+                {/* Big Overlay when Paused or Stopped */}
+                {!isPlaying && (
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-100 rounded-full relative"
-                    style={{ width: `${(currentTime / duration) * 100}%` }}
+                    onClick={togglePlay}
+                    className="absolute inset-0 bg-slate-950/65 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/45"
                   >
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white shadow-lg border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-
-                  {/* Phase Marker Dividers */}
-                  <div className="absolute inset-0 flex justify-between pointer-events-none opacity-40">
-                    <span className="w-[1px] h-full bg-white" style={{ left: '27.7%' }} />
-                    <span className="w-[1px] h-full bg-white" style={{ left: '56.6%' }} />
-                    <span className="w-[1px] h-full bg-white" style={{ left: '83.3%' }} />
-                  </div>
-                </div>
-
-                {/* Cinema Control Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={togglePlay}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition-all hover:scale-105 active:scale-95"
-                    >
-                      {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
-                      <span>{isPlaying ? 'Pausa' : 'Play'}</span>
-                    </button>
-
-                    <button
-                      onClick={restartMedia}
-                      className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                      title="Reiniciar video desde 00:00"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* 4 Scene Quick Jumps */}
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {PHASES.map((p, idx) => (
-                      <button
-                        key={p.id}
-                        onClick={() => jumpToPhase(idx)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono transition-all border ${
-                          activePhaseIndex === idx
-                            ? p.color === 'red' ? 'bg-red-500/20 text-red-300 border-red-500' :
-                              p.color === 'blue' ? 'bg-blue-500/20 text-blue-300 border-blue-500' :
-                              p.color === 'amber' ? 'bg-amber-500/20 text-amber-300 border-amber-500' :
-                              'bg-emerald-500/20 text-emerald-300 border-emerald-500'
-                            : 'bg-slate-900/60 text-slate-400 border-white/5 hover:border-white/20'
-                        }`}
-                      >
-                        {p.id === 1 ? '00:00 Enojo Sucio' :
-                         p.id === 2 ? '00:12 Enojo Limpio' :
-                         p.id === 3 ? '00:25 Sensor IoT' : '00:37 Cierre'}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Secondary Toggles: Subtitles, Mute, Fullscreen */}
-                  <div className="flex items-center gap-2 ml-auto">
-                    <button
-                      onClick={() => setShowSubtitles(!showSubtitles)}
-                      className={`p-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                        showSubtitles
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
-                      }`}
-                      title={showSubtitles ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
-                    >
-                      <Subtitles className="w-4 h-4" />
-                      <span className="hidden sm:inline">CC</span>
-                    </button>
-
-                    <button
-                      onClick={toggleMute}
-                      className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 transition-colors"
-                      title={isMuted ? 'Activar sonido' : 'Silenciar'}
-                    >
-                      {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
-                    </button>
-
-                    <button
-                      onClick={toggleFullscreen}
-                      className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 transition-colors"
-                      title="Pantalla completa"
-                    >
-                      {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Synchronized Live Clinical Teleprompter Card */}
-                <div className="mt-4 p-5 rounded-2xl bg-slate-950/80 border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                  <div className="md:col-span-8 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Activity className="w-4 h-4 text-blue-400" />
-                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                        {activePhase.metric}
-                      </span>
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
+                      <Play className="w-8 h-8 fill-current ml-1" />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-white font-heading">
-                      {activePhase.title} — <span className="text-slate-400 text-sm font-normal">{activePhase.subtitle}</span>
-                    </h3>
-                    <p className="text-xs text-slate-300 leading-relaxed bg-white/5 p-3 rounded-xl border-l-4 border-blue-500">
-                      <strong>Lectura Clínica:</strong> {activePhase.clinicalNote}
-                    </p>
-                  </div>
-
-                  <div className="md:col-span-4 flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/80 border border-white/5 text-center">
-                    <img
-                      src={activePhase.character === 'iot-mockup' ? '/assets/piedrita_paz.jpg' : activePhase.character}
-                      alt={activePhase.title}
-                      className="w-24 h-24 object-cover rounded-xl shadow-lg mb-2"
-                    />
-                    <span className="text-[11px] font-mono text-slate-400">
-                      Asset 3D Master
+                    <span className="mt-4 text-base font-bold text-white tracking-wide drop-shadow-md">
+                      {currentTime > 0 ? 'Video en Pausa — Clic o [Espacio] para Continuar' : 'Reproducir Cortometraje (45s)'}
+                    </span>
+                    <span className="text-xs text-slate-400 mt-1 font-mono">
+                      {currentTime > 0 ? 'Presiona [S] para detener por completo' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
                     </span>
                   </div>
-                </div>
-              </div>
-            ) : (
-              /* MODO LABORATORIO: VISTA DIVIDIDA CUADRO POR CUADRO */
-              <div>
-                {/* 4-PHASE TIMELINE STEPPER */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pb-6">
-                  {PHASES.map((phase, idx) => {
-                    const isActive = activePhaseIndex === idx
-                    return (
-                      <button
-                        key={phase.id}
-                        onClick={() => jumpToPhase(idx)}
-                        className={`text-left p-3 rounded-xl transition-all border ${
-                          isActive
-                            ? phase.color === 'red'
-                              ? 'bg-red-950/60 border-red-500/50 shadow-lg shadow-red-900/30'
-                              : phase.color === 'blue'
-                              ? 'bg-blue-950/60 border-blue-500/50 shadow-lg shadow-blue-900/30'
-                              : phase.color === 'amber'
-                              ? 'bg-amber-950/60 border-amber-500/50 shadow-lg shadow-amber-900/30'
-                              : 'bg-emerald-950/60 border-emerald-500/50 shadow-lg shadow-emerald-900/30'
-                            : 'bg-slate-900/40 border-white/5 hover:border-white/20'
-                        }`}
-                      >
-                        <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400 block mb-1">
-                          {phase.badge}
-                        </span>
-                        <h4 className="text-xs md:text-sm font-semibold text-white truncate">
-                          {phase.title}
-                        </h4>
-                      </button>
-                    )
-                  })}
-                </div>
+                )}
 
-                {/* DYNAMIC STAGE / VISUAL DISPLAY */}
-                <div className="rounded-2xl bg-[#0b0f19] border border-white/10 p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 min-h-[360px]">
-                  {/* Visual Avatar Container */}
-                  <div className="w-full md:w-1/2 flex flex-col items-center justify-center relative">
-                    {activePhase.character === 'iot-mockup' ? (
-                      /* Toma 3: Speech Emotion AI Mockup */
-                      <div className="w-full max-w-sm rounded-2xl bg-gradient-to-b from-slate-800 to-slate-900 p-6 border border-amber-500/30 shadow-2xl relative">
-                        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-                          <div className="flex items-center gap-2">
-                            <Radio className="w-4 h-4 text-amber-400 animate-pulse" />
-                            <span className="text-xs font-semibold text-slate-200">Regulador Relacional</span>
-                          </div>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">
-                            Edge SLM
-                          </span>
-                        </div>
-
-                        <div className="h-28 flex items-center justify-center gap-1.5 px-4 bg-slate-950/80 rounded-xl mb-4">
-                          {[16, 28, 48, 20, 56, 34, 18, 40, 60, 24, 14, 30].map((h, i) => (
-                            <div
-                              key={i}
-                              className="w-2 rounded-full bg-amber-400/80 transition-all duration-300"
-                              style={{
-                                height: isPlaying ? `${Math.min(70, h * 1.2)}px` : `${h / 2}px`,
-                                animation: isPlaying ? 'waveBreathing 1.2s ease-in-out infinite' : 'none'
-                              }}
-                            />
-                          ))}
-                        </div>
-
-                        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
-                          <p className="text-xs font-semibold text-amber-300">
-                            “Detectando tono elevado. Respira. Regresa al Enojo Limpio.”
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      /* Toma 1, 2, 4: 3D Characters with Animation */
-                      <div className="relative group">
-                        <div className={`absolute -inset-4 rounded-full blur-2xl opacity-40 transition-all ${
-                          activePhase.color === 'red' ? 'bg-red-600' :
-                          activePhase.color === 'blue' ? 'bg-blue-600' : 'bg-emerald-600'
-                        }`} />
-                        <img
-                          src={activePhase.character}
-                          alt={activePhase.title}
-                          className={`max-h-[300px] w-auto object-contain rounded-2xl relative z-10 transition-transform duration-500 drop-shadow-2xl ${
-                            activePhase.color === 'blue' ? 'animate-heart-pulse' :
-                            activePhase.color === 'red' ? 'animate-tension' : ''
-                          }`}
-                        />
-                        {activePhase.color === 'blue' && (
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-                            <Heart className="w-16 h-16 text-blue-400 opacity-60 animate-ping" />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Text & Clinical Breakdown */}
-                  <div className="w-full md:w-1/2 text-left">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium mb-3 bg-white/5 border border-white/10 text-slate-300">
-                      <Activity className="w-3.5 h-3.5 text-blue-400" />
-                      <span>{activePhase.metric}</span>
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-white mb-2 font-heading">
-                      {activePhase.title}
-                    </h3>
-                    <h4 className="text-sm font-medium text-slate-400 mb-4">
-                      {activePhase.subtitle}
-                    </h4>
-
-                    <blockquote className="text-sm md:text-base italic text-slate-200 bg-white/5 p-4 rounded-xl border-l-4 border-blue-500 mb-4 leading-relaxed">
-                      {activePhase.quote}
-                    </blockquote>
-
-                    <div className="p-3.5 rounded-xl bg-slate-900/90 border border-white/10">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                        Lectura Clínica para Terapeutas:
-                      </span>
-                      <p className="text-xs text-slate-300 leading-relaxed">
-                        {activePhase.clinicalNote}
+                {/* Subtitles Overlay */}
+                {showSubtitles && (
+                  <div className="absolute bottom-4 left-4 right-4 pointer-events-none z-20">
+                    <div className="bg-slate-950/90 backdrop-blur-md p-3.5 sm:p-4 rounded-xl border border-white/20 text-center shadow-2xl max-w-3xl mx-auto">
+                      <p className="text-xs sm:text-sm md:text-base font-semibold text-amber-300 drop-shadow leading-snug">
+                        {activePhase.quote}
                       </p>
                     </div>
                   </div>
+                )}
+              </div>
+
+              {/* Interactive Timeline Scrubber */}
+              <div
+                onClick={handleScrub}
+                className="h-3.5 w-full bg-slate-900 rounded-full cursor-pointer relative overflow-hidden border border-white/10 hover:border-white/30 transition-all group"
+                title="Haz clic o arrastra para moverte en la línea de tiempo"
+              >
+                {/* Progress Fill */}
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-100 rounded-full relative"
+                  style={{ width: `${(currentTime / duration) * 100}%` }}
+                >
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white shadow-lg border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                {/* Markers for the 4 scenes */}
+                <div className="absolute inset-0 flex justify-between pointer-events-none opacity-40">
+                  <span className="w-[1px] h-full bg-white" style={{ left: '27.7%' }} title="Toma 2: Enojo Limpio" />
+                  <span className="w-[1px] h-full bg-white" style={{ left: '56.6%' }} title="Toma 3: Sensor" />
+                  <span className="w-[1px] h-full bg-white" style={{ left: '83.3%' }} title="Toma 4: Cierre" />
                 </div>
               </div>
-            )}
+
+              {/* Console Control Bar - Master Presenter Controls */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <div className="flex items-center gap-2">
+                  {/* PLAY / PAUSE BUTTON */}
+                  <button
+                    onClick={togglePlay}
+                    className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 ${
+                      isPlaying
+                        ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
+                    }`}
+                    title="Alternar Reproducción / Pausa (Barra Espaciadora)"
+                  >
+                    {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+                    <span>{isPlaying ? 'PAUSA' : 'REPRODUCIR'}</span>
+                  </button>
+
+                  {/* STOP BUTTON */}
+                  <button
+                    onClick={stopMedia}
+                    className="px-4 py-2.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-500/40 hover:border-rose-400 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all hover:scale-105 active:scale-95"
+                    title="Detener por completo y reiniciar a 00:00 (Tecla S o Escape)"
+                  >
+                    <Square className="w-4 h-4 fill-current text-rose-400" />
+                    <span>STOP</span>
+                  </button>
+
+                  {/* REINICIAR */}
+                  <button
+                    onClick={restartMedia}
+                    className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 transition-colors"
+                    title="Reiniciar video desde 00:00"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* 4 SCENE JUMP BUTTONS FOR PRESENTER */}
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                  {PHASES.map((p, idx) => (
+                    <button
+                      key={p.id}
+                      onClick={() => jumpToPhase(idx)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all border ${
+                        activePhaseIndex === idx
+                          ? p.color === 'red' ? 'bg-red-500/25 text-red-200 border-red-500 shadow-md shadow-red-950/50 ring-1 ring-red-400' :
+                            p.color === 'blue' ? 'bg-blue-500/25 text-blue-200 border-blue-500 shadow-md shadow-blue-950/50 ring-1 ring-blue-400' :
+                            p.color === 'amber' ? 'bg-amber-500/25 text-amber-200 border-amber-500 shadow-md shadow-amber-950/50 ring-1 ring-amber-400' :
+                            'bg-emerald-500/25 text-emerald-200 border-emerald-500 shadow-md shadow-emerald-950/50 ring-1 ring-emerald-400'
+                          : 'bg-slate-900/80 text-slate-400 border-white/10 hover:border-white/30 hover:text-white'
+                      }`}
+                      title={`Ir a ${p.badge}`}
+                    >
+                      {p.id === 1 ? '1. Enojo Sucio' :
+                       p.id === 2 ? '2. Enojo Limpio' :
+                       p.id === 3 ? '3. Lucía Respira' : '4. Cierre'}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Secondary Toggles: Subtitles, Mute, Fullscreen */}
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    onClick={() => setShowSubtitles(!showSubtitles)}
+                    className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                      showSubtitles
+                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                        : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
+                    }`}
+                    title={showSubtitles ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
+                  >
+                    <Subtitles className="w-4 h-4" />
+                    <span className="hidden sm:inline">CC</span>
+                  </button>
+
+                  <button
+                    onClick={toggleMute}
+                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 transition-colors"
+                    title={isMuted ? 'Activar sonido (M)' : 'Silenciar (M)'}
+                  >
+                    {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+
+                  {/* PROYECTOR FULLSCREEN BUTTON */}
+                  <button
+                    onClick={toggleFullscreen}
+                    className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
+                    title="Pantalla Completa para Proyector (Tecla F)"
+                  >
+                    {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                    <span className="hidden sm:inline">PROYECTOR (F)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Synchronized Live Clinical Teleprompter Card */}
+              <div className="mt-4 p-5 rounded-2xl bg-slate-950/85 border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center shadow-xl">
+                <div className="md:col-span-8 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-blue-400" />
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+                      {activePhase.metric}
+                    </span>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-white font-heading">
+                    {activePhase.title} — <span className="text-slate-400 text-sm font-normal">{activePhase.subtitle}</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-white/5 p-3 rounded-xl border-l-4 border-blue-500">
+                    <strong>Lectura Clínica:</strong> {activePhase.clinicalNote}
+                  </p>
+                </div>
+
+                <div className="md:col-span-4 flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/80 border border-white/5 text-center">
+                  <img
+                    src={activePhase.character === 'iot-mockup' ? '/assets/piedrita_paz.jpg' : activePhase.character}
+                    alt={activePhase.title}
+                    className="w-24 h-24 object-cover rounded-xl shadow-lg mb-2"
+                  />
+                  <span className="text-[11px] font-mono text-slate-400">
+                    Asset 3D Master
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
