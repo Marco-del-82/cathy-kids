@@ -106,3 +106,14 @@
   border: 1px solid rgba(248, 113, 113, 0.25);
   box-shadow: 0 20px 40px -15px rgba(185, 28, 28, 0.3);
 }
+
+/* Desactivar y ocultar el botón flotante de Cast / Remote Playback en Android Chrome y WebKit */
+video::-internal-media-controls-cast-button,
+video::-webkit-media-controls-remote-playback-button,
+video::-webkit-media-controls-overlay-cast-button,
+video::-internal-media-controls-overlay-cast-button {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

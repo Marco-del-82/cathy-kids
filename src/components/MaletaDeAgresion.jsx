@@ -11,7 +11,17 @@ export const MaletaDeAgresion = () => {
     const video = videoRef.current;
     if (!video) return;
 
+    const handleStopMedia = () => {
+      setIsHovered(false);
+      video.pause();
+      try { video.currentTime = 0; } catch (e) {}
+    };
+
+    window.addEventListener('cathy:stop-all-character-media', handleStopMedia);
+
     if (isHovered && !isDeparted) {
+      window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
+      video.muted = false;
       const playPromise = video.play();
       if (playPromise !== undefined) playPromise.catch(() => {});
     } else {
@@ -20,6 +30,10 @@ export const MaletaDeAgresion = () => {
         video.currentTime = 0;
       } catch (e) {}
     }
+
+    return () => {
+      window.removeEventListener('cathy:stop-all-character-media', handleStopMedia);
+    };
   }, [isHovered, isDeparted]);
 
   const cleanPhrases = [
@@ -120,14 +134,19 @@ export const MaletaDeAgresion = () => {
         <div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onClick={() => {
+            if (!isDeparted) {
+              setIsHovered(!isHovered);
+            }
+          }}
           className="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-white/10 relative text-center group cursor-pointer"
         >
           <div className="relative overflow-hidden rounded-2xl w-72 h-72">
             {isDeparted ? (
-              /* Imagen de Lucía volando en su avión tras la despedida de Agresión */
+              /* Imagen de Agresión volando en su avión Punk Flyer tras ser despedido */
               <img
-                src="/assets/lucia-despedida-agresion.jpg"
-                alt="Lucía y Agresión despidiéndose en avión Punk Flyer"
+                src="/assets/agresion_avion_despedida.jpg"
+                alt="Agresión despidiéndose en su avión Punk Flyer"
                 className="w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-700 hover:scale-105"
               />
             ) : (
@@ -141,13 +160,17 @@ export const MaletaDeAgresion = () => {
                   }`}
                 />
 
-                {/* Video animado al pasar el mouse */}
+                {/* Video animado con audio SFX al pasar el mouse o tocar en móvil */}
                 <video
                   ref={videoRef}
                   src="/video/agresion-animado.mp4"
-                  muted
                   loop
                   playsInline
+                  webkit-playsinline="true"
+                  disableRemotePlayback
+                  disablePictureInPicture
+                  x-webkit-airplay="deny"
+                  controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
                   preload="auto"
                   className={`w-full h-full object-cover rounded-2xl shadow-2xl transition-opacity duration-300 absolute inset-0 ${
                     isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -155,11 +178,18 @@ export const MaletaDeAgresion = () => {
                 />
 
                 {/* Badge flotante de animación activa */}
-                {isHovered && (
+                {isHovered ? (
                   <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/80 text-rose-400 border border-rose-500/30 backdrop-blur-md flex items-center gap-1 shadow-md">
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/85 text-rose-400 border border-rose-500/40 backdrop-blur-md flex items-center gap-1 shadow-md">
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
-                      Movimiento Activo
+                      Sonido & Movimiento
+                    </span>
+                  </div>
+                ) : (
+                  <div className="md:hidden absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/85 text-rose-300 border border-rose-400/40 backdrop-blur-md flex items-center gap-1 shadow-md">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                      👆 Toca para mover
                     </span>
                   </div>
                 )}

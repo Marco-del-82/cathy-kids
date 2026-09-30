@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import {
   Play, Pause, Volume2, VolumeX, Maximize2, Minimize2,
   Heart, Sparkles, BookOpen, Brain, Activity, CheckCircle2, Radio,
-  Film
+  Film, ChevronDown, ChevronUp
 } from 'lucide-react'
 import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
 import { ReguladorRelacional } from './components/ReguladorRelacional'
@@ -114,7 +114,7 @@ export default function App() {
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [showSubtitles, setShowSubtitles] = useState(true)
+  const [showSubtitles, setShowSubtitles] = useState(false)
 
   // Media synchronization and projector keyboard controls
   useEffect(() => {
@@ -142,14 +142,26 @@ export default function App() {
       setActivePhaseIndex(0)
     }
 
-    const handlePlay = () => setIsPlaying(true)
+    const handlePlay = () => {
+      setIsPlaying(true)
+      window.dispatchEvent(new CustomEvent('cathy:stop-all-character-media'))
+    }
     const handlePause = () => setIsPlaying(false)
+
+    // Silenciar / pausar automáticamente el video principal si el usuario interactúa con los personajes
+    const handlePauseMainVideo = () => {
+      if (video && !video.paused) {
+        video.pause()
+        setIsPlaying(false)
+      }
+    }
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata)
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('ended', handleEnded)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
+    window.addEventListener('cathy:pause-main-video', handlePauseMainVideo)
 
     // Atajos de teclado para Presentación en Proyector
     const handleKeyDown = (e) => {
@@ -183,11 +195,22 @@ export default function App() {
     }
 
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
+      setIsFullscreen(!!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        video?.webkitDisplayingFullscreen
+      ))
     }
+
+    const handleWebkitBegin = () => setIsFullscreen(true)
+    const handleWebkitEnd = () => setIsFullscreen(false)
 
     window.addEventListener('keydown', handleKeyDown)
     document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+    video.addEventListener('webkitbeginfullscreen', handleWebkitBegin)
+    video.addEventListener('webkitendfullscreen', handleWebkitEnd)
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
@@ -195,8 +218,12 @@ export default function App() {
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
+      window.removeEventListener('cathy:pause-main-video', handlePauseMainVideo)
       window.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
+      video.removeEventListener('webkitbeginfullscreen', handleWebkitBegin)
+      video.removeEventListener('webkitendfullscreen', handleWebkitEnd)
     }
   }, [])
 
@@ -252,23 +279,45 @@ export default function App() {
   const toggleFullscreen = () => {
     const el = cinemaContainerRef.current
     const video = videoRef.current
-    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+    const isFs = !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      video?.webkitDisplayingFullscreen
+    )
+
+    const isMobile = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
     if (!isFs) {
-      if (el?.requestFullscreen) {
-        el.requestFullscreen().catch(() => {
-          video?.webkitEnterFullscreen?.()
-        })
-      } else if (el?.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen()
-      } else if (video?.webkitEnterFullscreen) {
-        video.webkitEnterFullscreen()
+      if (isMobile && video) {
+        // En móviles (Android / iOS): pantalla completa directa sobre el video para soporte nativo y rotación automática
+        if (video.requestFullscreen) {
+          video.requestFullscreen().catch(() => {
+            if (video.webkitEnterFullscreen) video.webkitEnterFullscreen()
+          })
+        } else if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen()
+        }
+      } else {
+        // En PC / Escritorio: pantalla completa sobre el marco cinemático completo
+        if (el?.requestFullscreen) {
+          el.requestFullscreen().catch(() => {
+            if (video?.requestFullscreen) video.requestFullscreen()
+            else if (video?.webkitEnterFullscreen) video.webkitEnterFullscreen()
+          })
+        } else if (video?.requestFullscreen) {
+          video.requestFullscreen()
+        } else if (video?.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen()
+        }
       }
     } else {
       if (document.exitFullscreen) {
-        document.exitFullscreen().catch(console.error)
+        document.exitFullscreen().catch(() => {})
       } else if (document.webkitExitFullscreen) {
         document.webkitExitFullscreen()
+      } else if (video?.webkitExitFullscreen) {
+        video.webkitExitFullscreen()
       }
     }
   }
@@ -387,19 +436,21 @@ export default function App() {
                   poster="/assets/lucia.jpg"
                   playsInline
                   webkit-playsinline="true"
+                  disableRemotePlayback
+                  disablePictureInPicture
+                  x-webkit-airplay="deny"
+                  controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
                   preload="auto"
                   onClick={togglePlay}
                   className="w-full h-full object-contain cursor-pointer"
                 />
 
-                {/* Non-Invasive Broadcast Subtitles Overlay */}
+                {/* Subtítulos Broadcast No Invasivos — Solo texto blanco con sombra, sin recuadros que tapen el video */}
                 {showSubtitles && activeSubtitle && isPlaying && (
-                  <div className="absolute bottom-3 left-2 right-2 sm:bottom-5 sm:left-6 sm:right-6 flex justify-center pointer-events-none z-20 transition-all">
-                    <div className="max-w-2xl px-3.5 py-1.5 rounded-xl bg-slate-950/85 backdrop-blur-md border border-white/15 text-center shadow-2xl">
-                      <p className="text-xs sm:text-sm md:text-base font-medium text-white tracking-wide leading-snug drop-shadow">
-                        {activeSubtitle}
-                      </p>
-                    </div>
+                  <div className="absolute bottom-3 left-4 right-4 sm:bottom-5 sm:left-8 sm:right-8 flex justify-center pointer-events-none z-20 transition-all">
+                    <p className="text-xs sm:text-sm md:text-base font-semibold text-white tracking-wide text-center leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] [text-shadow:_0_1px_3px_rgb(0_0_0_/_90%),_0_2px_8px_rgb(0_0_0_/_80%)] max-w-2xl px-2">
+                      {activeSubtitle}
+                    </p>
                   </div>
                 )}
 
@@ -566,84 +617,181 @@ export default function App() {
             </p>
           </div>
 
-          {/* Character Switcher Tabs (3 Protagonistas) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-4xl mx-auto">
-            {CHARACTERS_LAB.map((c) => {
-              const isSelected = selectedChar.id === c.id
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => setSelectedChar(c)}
-                  className={`p-4 rounded-2xl border transition-all text-left flex items-center gap-3 ${
-                    isSelected
-                      ? c.color === 'blue'
-                        ? 'bg-blue-950/70 border-blue-500 shadow-lg shadow-blue-900/30 ring-1 ring-blue-400/40'
-                        : c.color === 'red'
-                        ? 'bg-red-950/70 border-red-500 shadow-lg shadow-red-900/30 ring-1 ring-red-400/40'
-                        : 'bg-purple-950/70 border-purple-500 shadow-lg shadow-purple-900/30 ring-1 ring-purple-400/40'
-                      : 'bg-slate-900/50 border-white/10 hover:border-white/20'
-                  }`}
-                >
-                  <img src={c.image} alt={c.name} className="w-12 h-12 object-contain" />
-                  <div>
-                    <h4 className="text-sm font-bold text-white">{c.name}</h4>
-                    <span className="text-[11px] text-slate-400 block">{c.tagline}</span>
+          {/* VISTA ESCRITORIO (PC): Tabs Superiores + Deep Dive Card (100% Intacto) */}
+          <div className="hidden md:block">
+            {/* Character Switcher Tabs (3 Protagonistas) */}
+            <div className="grid grid-cols-3 gap-3 mb-8 max-w-4xl mx-auto">
+              {CHARACTERS_LAB.map((c) => {
+                const isSelected = selectedChar.id === c.id
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setSelectedChar(c)}
+                    className={`p-4 rounded-2xl border transition-all text-left flex items-center gap-3 ${
+                      isSelected
+                        ? c.color === 'blue'
+                          ? 'bg-blue-950/70 border-blue-500 shadow-lg shadow-blue-900/30 ring-1 ring-blue-400/40'
+                          : c.color === 'red'
+                          ? 'bg-red-950/70 border-red-500 shadow-lg shadow-red-900/30 ring-1 ring-red-400/40'
+                          : 'bg-purple-950/70 border-purple-500 shadow-lg shadow-purple-900/30 ring-1 ring-purple-400/40'
+                        : 'bg-slate-900/50 border-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    <img src={c.image} alt={c.name} className="w-12 h-12 object-contain" />
+                    <div>
+                      <h4 className="text-sm font-bold text-white">{c.name}</h4>
+                      <span className="text-[11px] text-slate-400 block">{c.tagline}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Selected Character Deep Dive Card */}
+            <div className="glass-panel rounded-3xl p-6 md:p-10 border border-white/10 grid grid-cols-12 gap-8 items-center">
+              <div className="col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/60 rounded-2xl border border-white/5 relative">
+                <img
+                  src={selectedChar.image}
+                  alt={selectedChar.name}
+                  className="max-h-[320px] w-auto object-contain drop-shadow-2xl"
+                />
+                <span className="mt-4 text-xs font-semibold px-3 py-1 rounded-full bg-white/10 text-white font-mono">
+                  {selectedChar.tagline}
+                </span>
+              </div>
+
+              <div className="col-span-7 space-y-5 text-left">
+                <div>
+                  <h3 className="text-2xl md:text-3xl font-bold text-white font-heading">
+                    {selectedChar.name}
+                  </h3>
+                  <p className="text-sm text-blue-400 font-medium">{selectedChar.clinicalGoal}</p>
+                </div>
+
+                <div className="space-y-4 text-sm">
+                  <div className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5">
+                    <div className="flex items-center gap-2 text-slate-200 font-semibold mb-1 text-xs">
+                      <Heart className="w-3.5 h-3.5 text-blue-400" />
+                      <span>Fisiología y Simbología Visual:</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">{selectedChar.physiology}</p>
                   </div>
-                </button>
-              )
-            })}
+
+                  <div className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5">
+                    <div className="flex items-center gap-2 text-slate-200 font-semibold mb-1 text-xs">
+                      <Brain className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>Mecanismo Neurobiológico:</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">{selectedChar.neurobiology}</p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5">
+                    <span className="text-[11px] font-semibold text-slate-400 block mb-2">Frases Típicas del Modelo:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedChar.phrases.map((p, i) => (
+                        <span key={i} className="text-xs px-2.5 py-1 rounded-md bg-white/5 text-slate-200 border border-white/10">
+                          {p}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Selected Character Deep Dive Card */}
-          <div className="glass-panel rounded-3xl p-6 md:p-10 border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/60 rounded-2xl border border-white/5 relative">
-              <img
-                src={selectedChar.image}
-                alt={selectedChar.name}
-                className="max-h-[320px] w-auto object-contain drop-shadow-2xl"
-              />
-              <span className="mt-4 text-xs font-semibold px-3 py-1 rounded-full bg-white/10 text-white font-mono">
-                {selectedChar.tagline}
-              </span>
-            </div>
+          {/* VISTA MÓVIL (ACORDEÓN IN-PLACE): Cada personaje se expande directamente debajo de donde pulsas */}
+          <div className="md:hidden space-y-3.5">
+            {CHARACTERS_LAB.map((c) => {
+              const isOpen = selectedChar.id === c.id
+              return (
+                <div
+                  key={c.id}
+                  className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
+                    isOpen
+                      ? c.color === 'blue'
+                        ? 'bg-slate-900/90 border-blue-500/60 shadow-xl shadow-blue-950/40 ring-1 ring-blue-500/30'
+                        : c.color === 'red'
+                        ? 'bg-slate-900/90 border-red-500/60 shadow-xl shadow-red-950/40 ring-1 ring-red-500/30'
+                        : 'bg-slate-900/90 border-purple-500/60 shadow-xl shadow-purple-950/40 ring-1 ring-purple-500/30'
+                      : 'bg-slate-950/60 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  {/* Encabezado del Acordeón */}
+                  <button
+                    onClick={() => setSelectedChar(c)}
+                    className="w-full p-3.5 flex items-center justify-between text-left gap-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img src={c.image} alt={c.name} className="w-12 h-12 object-contain rounded-xl bg-slate-950/50 p-1 border border-white/10 shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                          {c.name}
+                          {isOpen && (
+                            <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                              Activo
+                            </span>
+                          )}
+                        </h4>
+                        <span className="text-[11px] text-slate-400 block line-clamp-1">{c.tagline}</span>
+                      </div>
+                    </div>
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center border transition-transform duration-300 shrink-0 ${
+                      isOpen ? 'border-cyan-400/40 bg-cyan-950/40 text-cyan-300 rotate-180' : 'border-white/10 bg-white/5 text-slate-400'
+                    }`}>
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </div>
+                  </button>
 
-            <div className="md:col-span-7 space-y-5 text-left">
-              <div>
-                <h3 className="text-2xl md:text-3xl font-bold text-white font-heading">
-                  {selectedChar.name}
-                </h3>
-                <p className="text-sm text-blue-400 font-medium">{selectedChar.clinicalGoal}</p>
-              </div>
+                  {/* Cuerpo Expandible In-Place */}
+                  {isOpen && (
+                    <div className="p-4 pt-1 border-t border-white/5 space-y-3.5 animate-fadeIn">
+                      {/* Imagen compacta */}
+                      <div className="flex flex-col items-center justify-center p-3 bg-slate-950/70 rounded-xl border border-white/5 mt-2">
+                        <img
+                          src={c.image}
+                          alt={c.name}
+                          className="max-h-[200px] w-auto object-contain drop-shadow-xl"
+                        />
+                        <p className="mt-2 text-xs text-blue-300 font-semibold text-center">
+                          {c.clinicalGoal}
+                        </p>
+                      </div>
 
-              <div className="space-y-4 text-sm">
-                <div className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5">
-                  <div className="flex items-center gap-2 text-slate-200 font-semibold mb-1 text-xs">
-                    <Heart className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Fisiología y Simbología Visual:</span>
-                  </div>
-                  <p className="text-slate-300 text-xs leading-relaxed">{selectedChar.physiology}</p>
+                      {/* Detalles clínicos */}
+                      <div className="space-y-2.5">
+                        <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                          <div className="flex items-center gap-2 text-slate-200 font-semibold mb-1 text-xs">
+                            <Heart className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                            <span>Fisiología y Simbología:</span>
+                          </div>
+                          <p className="text-slate-300 text-xs leading-relaxed">{c.physiology}</p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                          <div className="flex items-center gap-2 text-slate-200 font-semibold mb-1 text-xs">
+                            <Brain className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                            <span>Mecanismo Neurobiológico:</span>
+                          </div>
+                          <p className="text-slate-300 text-xs leading-relaxed">{c.neurobiology}</p>
+                        </div>
+
+                        <div className="p-3 rounded-xl bg-slate-950/60 border border-white/5">
+                          <span className="text-[11px] font-semibold text-slate-400 block mb-1.5">Frases Típicas del Modelo:</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {c.phrases.map((p, i) => (
+                              <span key={i} className="text-[11px] px-2 py-0.5 rounded-md bg-white/5 text-slate-200 border border-white/10">
+                                {p}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5">
-                  <div className="flex items-center gap-2 text-slate-200 font-semibold mb-1 text-xs">
-                    <Brain className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>Mecanismo Neurobiológico:</span>
-                  </div>
-                  <p className="text-slate-300 text-xs leading-relaxed">{selectedChar.neurobiology}</p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-900/80 border border-white/5">
-                  <span className="text-[11px] font-semibold text-slate-400 block mb-2">Frases Típicas del Modelo:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedChar.phrases.map((p, i) => (
-                      <span key={i} className="text-xs px-2.5 py-1 rounded-md bg-white/5 text-slate-200 border border-white/10">
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+              )
+            })}
           </div>
         </div>
       </section>

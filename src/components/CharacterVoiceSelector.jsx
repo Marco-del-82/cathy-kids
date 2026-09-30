@@ -9,10 +9,25 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
   const shouldAnimate = isHovered || isPlaying;
 
   React.useEffect(() => {
+    const handleStopAll = () => {
+      setIsHovered(false);
+      const video = videoRef.current;
+      if (video) {
+        video.pause();
+        try { video.currentTime = 0; } catch (e) {}
+      }
+    };
+    window.addEventListener('cathy:stop-all-character-media', handleStopAll);
+    return () => window.removeEventListener('cathy:stop-all-character-media', handleStopAll);
+  }, []);
+
+  React.useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     if (shouldAnimate) {
+      window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
+      video.muted = false;
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {});
@@ -27,7 +42,10 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
 
   return (
     <div
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
+      }}
       onMouseLeave={() => setIsHovered(false)}
       className={`group relative rounded-3xl p-5 border bg-slate-900/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
         isPlaying ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
@@ -37,8 +55,12 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
       <div className={`absolute top-0 right-0 w-44 h-44 bg-gradient-to-br ${char.theme.glow} rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity`} />
 
       <div>
-        {/* Imagen del Personaje con Video interactivo al Hover / Reproducción */}
-        <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all cursor-pointer">
+        {/* Imagen del Personaje con Video interactivo al Hover / Reproducción (y Tap en Móvil) */}
+        <div
+          onClick={() => onTogglePlay(char)}
+          className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all cursor-pointer"
+          title="Toca para animar y escuchar"
+        >
           {/* Imagen Estática de Fondo */}
           <img
             src={char.image}
@@ -48,14 +70,18 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
             }`}
           />
 
-          {/* Video Animado Activo al Hover o al Escuchar Audio */}
+          {/* Video Animado Activo al Hover o al Escuchar Audio (con sus efectos de sonido SFX nativos) */}
           {char.videoSrc && (
             <video
               ref={videoRef}
               src={char.videoSrc}
-              muted
               loop
               playsInline
+              webkit-playsinline="true"
+              disableRemotePlayback
+              disablePictureInPicture
+              x-webkit-airplay="deny"
+              controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
               preload="auto"
               className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
                 shouldAnimate ? 'opacity-100' : 'opacity-0 pointer-events-none'
@@ -64,11 +90,19 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
           )}
 
           {/* Indicador de animación activa */}
-          {shouldAnimate && (
+          {shouldAnimate ? (
             <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
-              <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/80 text-emerald-400 border border-emerald-400/30 backdrop-blur-md flex items-center gap-1 shadow-md">
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/85 text-emerald-400 border border-emerald-400/40 backdrop-blur-md flex items-center gap-1 shadow-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                Animación Activa
+                {isPlaying ? 'Reproduciendo Voz' : 'Animación Activa'}
+              </span>
+            </div>
+          ) : (
+            /* Badge de invitación táctil visible en móviles */
+            <div className="md:hidden absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/85 text-amber-300 border border-amber-400/40 backdrop-blur-md flex items-center gap-1 shadow-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                👆 Toca para animar
               </span>
             </div>
           )}
@@ -155,7 +189,7 @@ export const CharacterVoiceSelector = () => {
       quote: '"A veces siento el volcán en el pecho... pero respiro profundo y elijo no lastimar a los que amo. ¡Elijo la luz del Enojo Limpio!"',
       audioSrc: '/audio/lucia_voice.mp3?v=20260930_prod_v3',
       voiceName: 'Voz Niña (Dulce & Valiente)',
-      image: '/assets/lucia_clay_full.jpg',
+      image: '/assets/lucia.jpg',
       videoSrc: '/video/lucia-animada.mp4',
       magicPower: 'Báculo de Domadora y Piedrita de la Paz',
       secretMessage: 'Al mirar a mamá y papá a los ojos con valentía, la vergüenza se disuelve.',
@@ -230,6 +264,7 @@ export const CharacterVoiceSelector = () => {
 
     // Crear y reproducir nueva instancia con soporte móvil completo
     try {
+      window.dispatchEvent(new CustomEvent('cathy:pause-main-video'));
       const audio = new Audio(char.audioSrc);
       audio.playsInline = true;
       audio.preload = 'auto';
