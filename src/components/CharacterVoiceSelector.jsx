@@ -11,7 +11,7 @@ export const CharacterVoiceSelector = () => {
       name: 'Lucía (La Domadora)',
       ageTag: '6 Años • Protagonista Valiente',
       role: 'Aprende a transformar la tormenta en valentía y límites firmes',
-      quote: '"A veces siento que el enojo me atrapa... pero no quiero lastimar a los que amo."',
+      quote: '"A veces siento el volcán en el pecho... pero respiro profundo y elijo no lastimar a los que amo. ¡Elijo la luz del Enojo Limpio!"',
       audioSrc: '/audio/lucia_voice.mp3',
       voiceName: 'Voz Dulce / Infantil',
       image: '/assets/lucia.jpg',

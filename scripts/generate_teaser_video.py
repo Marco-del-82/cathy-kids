@@ -7,7 +7,7 @@ import os
 import subprocess
 
 ASSETS_DIR = "/home/marco/Proyectos/Cathy-Kids/public/assets"
-AUDIO_PATH = "/home/marco/Proyectos/Cathy-Kids/public/voz_locucion_broadcast.wav"
+AUDIO_PATH = "/home/marco/Proyectos/Cathy-Kids/public/assets/audio/cathy_kids_master_45s_con_sfx.wav"
 OUTPUT_DIR = "/home/marco/Proyectos/Cathy-Kids/public/video"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "cortometraje_45s.mp4")
 
