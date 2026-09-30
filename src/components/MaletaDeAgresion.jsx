@@ -16,29 +16,45 @@ export const MaletaDeAgresion = () => {
     { id: 8, text: "Cruzar brazos y avisar cuando esté listo", icon: "🤝" }
   ];
 
+  // AudioContext Singleton persistente para soportar clicks rápidos ilimitados sin agotar hardware
+  const getAudioContext = () => {
+    if (typeof window === 'undefined') return null;
+    if (!window.__cathySharedAudioCtx || window.__cathySharedAudioCtx.state === 'closed') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        window.__cathySharedAudioCtx = new AudioCtx();
+      }
+    }
+    if (window.__cathySharedAudioCtx && window.__cathySharedAudioCtx.state === 'suspended') {
+      window.__cathySharedAudioCtx.resume();
+    }
+    return window.__cathySharedAudioCtx;
+  };
+
   const playClick = () => {
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+      const ctx = getAudioContext();
+      if (!ctx) return;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(580, ctx.currentTime);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
+      osc.frequency.setValueAtTime(620, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.06);
+      gain.gain.setValueAtTime(0.12, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.07);
-    } catch {}
+    } catch (e) {
+      console.warn("Error click audio:", e);
+    }
   };
 
   const playSuccess = () => {
     try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
+      const ctx = getAudioContext();
+      if (!ctx) return;
       [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -51,7 +67,9 @@ export const MaletaDeAgresion = () => {
         osc.start(ctx.currentTime + idx * 0.12);
         osc.stop(ctx.currentTime + idx * 0.12 + 0.9);
       });
-    } catch {}
+    } catch (e) {
+      console.warn("Error success audio:", e);
+    }
   };
 
   const togglePhrase = (id) => {

@@ -9,12 +9,58 @@ export const PiedritaDeLaPaz = () => {
   const [hasCompleted, setHasCompleted] = useState(false);
   const holdIntervalRef = useRef(null);
 
-  // Sintetizador Web Audio API para campana de paz / cuenco tibetano
+  // AudioContext Singleton persistente
+  const getAudioContext = () => {
+    if (typeof window === 'undefined') return null;
+    if (!window.__cathySharedAudioCtx || window.__cathySharedAudioCtx.state === 'closed') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) window.__cathySharedAudioCtx = new AudioCtx();
+    }
+    if (window.__cathySharedAudioCtx && window.__cathySharedAudioCtx.state === 'suspended') {
+      window.__cathySharedAudioCtx.resume();
+    }
+    return window.__cathySharedAudioCtx;
+  };
+
+  // Efecto de sonido inmediato al apachurrar la Piedrita (tactile calming resonance)
+  const playStonePress = () => {
+    try {
+      const ctx = getAudioContext();
+      if (!ctx) return;
+
+      const osc = ctx.createOscillator();
+      const harmonic = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(432, ctx.currentTime); // Frecuencia orgánica 432Hz
+      osc.frequency.exponentialRampToValueAtTime(216, ctx.currentTime + 0.35);
+
+      harmonic.type = 'triangle';
+      harmonic.frequency.setValueAtTime(864, ctx.currentTime);
+      harmonic.frequency.exponentialRampToValueAtTime(432, ctx.currentTime + 0.28);
+
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+
+      osc.connect(gain);
+      harmonic.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      harmonic.start();
+      osc.stop(ctx.currentTime + 0.4);
+      harmonic.stop(ctx.currentTime + 0.4);
+    } catch (e) {
+      console.warn("Audio press fallback:", e);
+    }
+  };
+
+  // Sintetizador Web Audio API para campana de paz / cuenco tibetano al completar
   const playPeaceChime = () => {
     try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContext) return;
-      const ctx = new AudioContext();
+      const ctx = getAudioContext();
+      if (!ctx) return;
 
       // Fundamental y armónicos
       const freqs = [528, 660, 792, 1056]; // Frecuencia Solfeggio 528Hz (Transformación y Paz)
@@ -25,7 +71,7 @@ export const PiedritaDeLaPaz = () => {
         osc.type = idx === 0 ? 'sine' : 'triangle';
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
 
-        const volume = 0.25 / (idx + 1);
+        const volume = 0.22 / (idx + 1);
         gain.gain.setValueAtTime(volume, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.5);
 
@@ -51,6 +97,7 @@ export const PiedritaDeLaPaz = () => {
 
   const startCooling = () => {
     if (hasCompleted) return;
+    playStonePress();
     setIsHolding(true);
 
     if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
