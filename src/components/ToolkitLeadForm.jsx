@@ -11,7 +11,7 @@ export const ToolkitLeadForm = () => {
   const [directDownloaded, setDirectDownloaded] = useState(false);
   const [whatsappUrl, setWhatsappUrl] = useState('');
 
-  const WHATSAPP_PHONE = '525561776727';
+  const WHATSAPP_PHONE = '525564776727';
 
   const generateWhatsAppUrl = (data) => {
     const text = `¡Hola Cathy! Soy ${data.nombre} (${data.rol}). Acabo de descargar el Toolkit Clínico 'Enojo Limpio vs Sucio' desde cathykids.club. Me gustaría confirmar mi acceso al simposio y recibir las actualizaciones clínicas en mi WhatsApp (${data.telefono}).`;
@@ -203,7 +203,7 @@ export const ToolkitLeadForm = () => {
                     className="w-full py-4 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-base shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-3 active:scale-95 transition-all text-center group cursor-pointer"
                   >
                     <MessageCircle className="w-5 h-5 fill-white/20 group-hover:scale-110 transition-transform" />
-                    <span>Abrir Chat con Cathy (+52 55 6177 6727)</span>
+                    <span>Abrir Chat con Cathy (+52 55 6477 6727)</span>
                   </a>
                 )}
 
@@ -225,7 +225,7 @@ export const ToolkitLeadForm = () => {
                 <div className="text-left border-b border-slate-200 pb-3">
                   <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md mb-2">
                     <MessageCircle className="w-4 h-4 text-emerald-700" />
-                    Canal Directo WhatsApp · +52 55 6177 6727
+                    Canal Directo WhatsApp · +52 55 6477 6727
                   </div>
                   <h3 className="text-xl font-black text-slate-950">
                     Solicitud de Acceso Profesional
@@ -295,7 +295,7 @@ export const ToolkitLeadForm = () => {
                 </button>
 
                 <p className="text-[11px] text-slate-500 text-center leading-tight">
-                  🔒 Cero spam. Descarga directa en PDF + Enlace directo al WhatsApp de Cathy (+52 55 6177 6727).
+                  🔒 Cero spam. Descarga directa en PDF + Enlace directo al WhatsApp de Cathy (+52 55 6477 6727).
                 </p>
               </form>
             )}

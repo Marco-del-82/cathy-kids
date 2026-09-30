@@ -958,7 +958,7 @@ export default function App() {
 
       {/* Botón Flotante Permanente de WhatsApp con Cathy */}
       <a
-        href="https://wa.me/525561776727?text=Hola%20Cathy%2C%20visito%20cathykids.club%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20las%20herramientas%20cl%C3%ADnicas%20y%20conferencias."
+        href="https://wa.me/525564776727?text=Hola%20Cathy%2C%20visito%20cathykids.club%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20las%20herramientas%20cl%C3%ADnicas%20y%20conferencias."
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contactar a Cathy Calderón por WhatsApp"
