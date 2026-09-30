@@ -55,11 +55,14 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
       <div className={`absolute top-0 right-0 w-44 h-44 bg-gradient-to-br ${char.theme.glow} rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity`} />
 
       <div>
-        {/* Imagen del Personaje con Video interactivo al Hover / Reproducción (y Tap en Móvil) */}
+        {/* Imagen del Personaje con Video interactivo al Hover o Tap (Solo el botón inferior activa la voz) */}
         <div
-          onClick={() => onTogglePlay(char)}
+          onClick={() => {
+            // El clic sobre la imagen solo alterna la animación de video, NUNCA la voz
+            setIsHovered(prev => !prev);
+          }}
           className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all cursor-pointer"
-          title="Toca para animar y escuchar"
+          title="Toca para ver en movimiento"
         >
           {/* Imagen Estática de Fondo */}
           <img
