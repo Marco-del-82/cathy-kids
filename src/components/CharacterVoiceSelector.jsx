@@ -62,82 +62,6 @@ export const CharacterVoiceSelector = () => {
         button: 'bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white',
         icon: Flame
       }
-    },
-    {
-      id: 'berrinche',
-      name: 'Monstruo de los Berrinches',
-      ageTag: 'El Volcán Pataleta',
-      role: 'Sobrecarga física motora: el cuerpo actúa como un bebé sin control',
-      quote: '"¡La cabeza me arde como volcán! ¡El cuerpo no me responde y solo quiero llorar y patalear!"',
-      audioSrc: '/audio/berrinche_voice.mp3',
-      voiceName: 'Voz Quebrada / Desbordada',
-      image: '/assets/berrinche_3d.jpg',
-      magicPower: 'Cresta de Dinosaurio y Lágrimas Gigantes',
-      secretMessage: 'Necesita saltar, sacudirse y 4 respiraciones profundas para liberar la lava.',
-      theme: {
-        border: 'border-blue-500/40 hover:border-blue-500',
-        badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-        glow: 'from-blue-600/25 to-indigo-950/20',
-        button: 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white',
-        icon: HeartCrack
-      }
-    },
-    {
-      id: 'agresion',
-      name: 'La Agresión',
-      ageTag: 'El Monstruo de las Maletas',
-      role: 'Golpes y patadas impulsivas que empacan sus maletas al haber límites',
-      quote: '"¡Tenía ganas de patear! Pero cuando me ponen límites con respeto, ¡tomo mis maletas y me voy!"',
-      audioSrc: '/audio/agresion_voice.mp3',
-      voiceName: 'Voz Ronca con Cresta Punk',
-      image: '/assets/agresion_3d.jpg',
-      magicPower: 'Cresta Verde Punk y Maleta con Rueditas',
-      secretMessage: 'En un hogar con acuerdos y respeto, la agresión ya no tiene lugar y se despide.',
-      theme: {
-        border: 'border-emerald-500/40 hover:border-emerald-500',
-        badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-        glow: 'from-emerald-600/25 to-teal-950/20',
-        button: 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white',
-        icon: Luggage
-      }
-    },
-    {
-      id: 'verguenza',
-      name: 'Vergüenza Tóxica',
-      ageTag: 'El Avestruz Escondido',
-      role: 'Hace creer al niño que es defectuoso, malo y que nadie lo va a querer',
-      quote: '"Meto mi cabeza en la tierra... siento que soy una niña mala y que ya no merezco cariño."',
-      audioSrc: '/audio/verguenza_voice.mp3',
-      voiceName: 'Voz Tímida / En un Susurro',
-      image: '/assets/verguenza_toxica.jpg',
-      magicPower: 'Plumas Pastel y Nido de Arena',
-      secretMessage: 'Se disuelve cuando papá y mamá regalan una sonrisa y un abrazo que repara.',
-      theme: {
-        border: 'border-purple-400/40 hover:border-purple-400',
-        badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-400/30',
-        glow: 'from-purple-600/25 to-pink-950/20',
-        button: 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white',
-        icon: Eye
-      }
-    },
-    {
-      id: 'curiosidad',
-      name: 'La Curiosidad',
-      ageTag: 'El Hada de los Lentes Mágicos',
-      role: 'Mira con asombro sin juzgar, revelando los mensajes de amor ocultos',
-      quote: '"¡Ponte mis lentes mágicos! Detrás del enojo siempre hay tristeza, soledad o ganas de ser amado."',
-      audioSrc: '/audio/curiosidad_voice.mp3',
-      voiceName: 'Voz Cristalina / Mágica',
-      image: '/assets/curiosidad_lentes.jpg',
-      magicPower: 'Lentes Arcoíris y Lente Estelar',
-      secretMessage: 'Convierte el juicio en comprensión y le abre la puerta a la Empatía.',
-      theme: {
-        border: 'border-fuchsia-400/40 hover:border-fuchsia-400',
-        badgeBg: 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-400/30',
-        glow: 'from-fuchsia-600/25 to-pink-950/20',
-        button: 'bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:from-fuchsia-400 hover:to-pink-400 text-white',
-        icon: Wand2
-      }
     }
   ];
 
@@ -175,14 +99,14 @@ export const CharacterVoiceSelector = () => {
           El Universo Emocional • Cathy Kids
         </span>
         <h2 className="text-3xl sm:text-5xl font-black text-white mt-4 mb-3 tracking-tight font-heading">
-          Los 7 Personajes del Cuento
+          Los 3 Protagonistas del Cortometraje
         </h2>
         <p className="text-slate-300 max-w-3xl mx-auto text-sm sm:text-base leading-relaxed">
-          Diseñados a partir del manuscrito clínico de <strong>Cathy Calderón de la Barca</strong>. Cada criatura representa un estado fisiológico real, con su voz acústica y su llave de transformación mágica.
+          La anatomía del límite en la crianza consciente: <strong>Lucía</strong> frente a la dualidad del <strong>Enojo Limpio</strong> y el <strong>Enojo Sucio</strong>.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
         {characters.map((char) => {
           const Icon = char.theme.icon;
           const isPlaying = playingId === char.id;

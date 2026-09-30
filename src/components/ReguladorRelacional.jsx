@@ -52,14 +52,14 @@ export const ReguladorRelacional = () => {
         for (let i = 0; i < bufferLength; i++) {
           sum += dataArray[i];
         }
-        const average = sum / bufferLength;
-        const normalizedDb = Math.round((average / 255) * 100);
-        setDecibels(normalizedDb);
+        // Mayor sensibilidad acústica sin requerir gritos (curva de ganancia suave)
+        const amplifiedVolume = Math.min(100, Math.round(Math.pow(average / 180, 0.8) * 100));
+        setDecibels(amplifiedVolume);
 
-        // Histeresis de reactividad
-        if (normalizedDb > 45) {
+        // Umbral calibrado: hablar con firmeza/énfasis (~26-30dB) activa la alerta
+        if (amplifiedVolume > 28) {
           setAlertaSucia(true);
-        } else if (normalizedDb < 30) {
+        } else if (amplifiedVolume < 18) {
           setAlertaSucia(false);
         }
 

@@ -18,7 +18,7 @@ const PHASES = [
     subtitle: 'El Enojo Sucio y la Amígdala',
     badge: 'Toma 1 • 00:00 - 00:12',
     color: 'red',
-    character: '/assets/Enojo_Sucio.png',
+    character: '/assets/enojo_sucio_3d.jpg',
     quote: '“Cuando intervenimos desde la reactividad, el límite se convierte en herida. El Enojo Sucio contamina el vínculo: el cerebro infantil deja de procesar el aprendizaje y entra en modo de alerta y miedo.”',
     clinicalNote: 'El secuestro amigdalino apaga la corteza prefrontal del niño. La amenaza genera parálisis o huida (Vergüenza Tóxica), bloqueando toda integración cognitiva del límite.',
     metric: 'Modo Supervivencia Activado'
@@ -30,7 +30,7 @@ const PHASES = [
     subtitle: 'El Enojo Limpio y la Corregulación',
     badge: 'Toma 2 • 00:12 - 00:25',
     color: 'blue',
-    character: '/assets/Enojo_Limpio.png',
+    character: '/assets/enojo_limpio_3d.jpg',
     quote: '“Pero el enojo no tiene que reprimir su fuerza: es energía vital. Cuando nace desde el respeto, se convierte en Enojo Limpio. Tiene la firmeza para frenar la injusticia y sostener la estructura, manteniendo el corazón abierto y el apego a salvo.”',
     clinicalNote: 'Firmeza sin agresión. El latido rítmico (60 BPM) promueve la regulación vagal del infante. El límite se asimila porque el vínculo de seguridad permanece intacto.',
     metric: 'Corregulación Vagal • 60 BPM'
@@ -54,7 +54,7 @@ const PHASES = [
     subtitle: 'La Pregunta para el Foro Clínico',
     badge: 'Toma 4 • 00:37 - 00:45',
     color: 'emerald',
-    character: '/assets/Lucia-Enojo-sucio-Enojo-Limpio.jpeg',
+    character: '/assets/lucia_3d.jpg',
     quote: '“En la familia y en el espacio terapéutico... ¿desde cuál de los dos estamos interviniendo? ¿A cuál decidimos alimentar hoy?”',
     clinicalNote: 'Cathy Calderón de la Barca. Herramientas clínicas y literatura terapéutica para una crianza con apego seguro y límites conscientes.',
     metric: '¿Límites que hieren o con respeto?'
@@ -83,17 +83,6 @@ const CHARACTERS_LAB = [
     neurobiology: 'Hiperactivación amigdalina. La frustración muta en reactividad, juicio punitivo y humillación hacia el receptor.',
     phrases: ['“¡Qué tonta eres, vete a tu cuarto!”', '“¡Así nadie te va a querer!”', '“¡Pareces loquita!”'],
     clinicalGoal: 'Identificar la coraza defensiva y desmontar la culpa y el dolor acumulado.'
-  },
-  {
-    id: 'berrinche',
-    name: 'Monstruo de los Berrinches',
-    tagline: 'El Desborde Amigdalino',
-    color: 'indigo',
-    image: '/assets/Berrinche.png',
-    physiology: 'Espinas dorsales rojas de alerta, llanto a borbotones, boca abierta en desborde, postura encorvada.',
-    neurobiology: 'Cerebro primitivo sobrecargado. El niño carece del vocabulario emocional para nombrar la frustración y explota en rabieta física.',
-    phrases: ['“¡Volcán interior a máxima temperatura!”', '“Gritos, patadas y puños involuntarios.”'],
-    clinicalGoal: 'Contención física segura, silencio compasivo y retorno de la calma antes de razonar.'
   },
   {
     id: 'lucia',
@@ -454,8 +443,8 @@ export default function App() {
             </p>
           </div>
 
-          {/* Character Switcher Tabs */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+          {/* Character Switcher Tabs (3 Protagonistas) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-4xl mx-auto">
             {CHARACTERS_LAB.map((c) => {
               const isSelected = selectedChar.id === c.id
               return (
@@ -465,12 +454,10 @@ export default function App() {
                   className={`p-4 rounded-2xl border transition-all text-left flex items-center gap-3 ${
                     isSelected
                       ? c.color === 'blue'
-                        ? 'bg-blue-950/70 border-blue-500 shadow-lg shadow-blue-900/30'
+                        ? 'bg-blue-950/70 border-blue-500 shadow-lg shadow-blue-900/30 ring-1 ring-blue-400/40'
                         : c.color === 'red'
-                        ? 'bg-red-950/70 border-red-500 shadow-lg shadow-red-900/30'
-                        : c.color === 'indigo'
-                        ? 'bg-indigo-950/70 border-indigo-500 shadow-lg shadow-indigo-900/30'
-                        : 'bg-purple-950/70 border-purple-500 shadow-lg shadow-purple-900/30'
+                        ? 'bg-red-950/70 border-red-500 shadow-lg shadow-red-900/30 ring-1 ring-red-400/40'
+                        : 'bg-purple-950/70 border-purple-500 shadow-lg shadow-purple-900/30 ring-1 ring-purple-400/40'
                       : 'bg-slate-900/50 border-white/10 hover:border-white/20'
                   }`}
                 >
