@@ -103,7 +103,7 @@ export default function App() {
   const cinemaContainerRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(40.5)
+  const [duration, setDuration] = useState(41.8)
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -175,11 +175,16 @@ export default function App() {
     }
 
     const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement)
+      setIsFullscreen(!!(document.fullscreenElement || document.webkitFullscreenElement))
+    }
+    const handleVideoEndFullscreen = () => {
+      setIsFullscreen(false)
     }
 
     window.addEventListener('keydown', handleKeyDown)
     document.addEventListener('fullscreenchange', handleFullscreenChange)
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+    video.addEventListener('webkitendfullscreen', handleVideoEndFullscreen)
 
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata)
@@ -187,8 +192,10 @@ export default function App() {
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('play', handlePlay)
       video.removeEventListener('pause', handlePause)
+      video.removeEventListener('webkitendfullscreen', handleVideoEndFullscreen)
       window.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
     }
   }, [])
 
@@ -242,25 +249,40 @@ export default function App() {
   }
 
   const toggleFullscreen = () => {
-    const el = cinemaContainerRef.current
     const video = videoRef.current
-    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)
+    if (!video) return
+
+    // 1. En iPhone (iOS Safari): exactamente igual que YouTube con el reproductor nativo en horizontal
+    if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen()
+      return
+    }
+
+    // 2. En PC y Android: Fullscreen directo sobre el video (sin cajas ni bordes de web)
+    const isFs = !!(
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.msFullscreenElement
+    )
 
     if (!isFs) {
-      if (el?.requestFullscreen) {
-        el.requestFullscreen().catch(() => {
-          video?.webkitEnterFullscreen?.()
-        })
-      } else if (el?.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen()
-      } else if (video?.webkitEnterFullscreen) {
-        video.webkitEnterFullscreen()
+      if (video.requestFullscreen) {
+        video.requestFullscreen().catch(() => {})
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen()
+      }
+      if (window.screen?.orientation?.lock) {
+        window.screen.orientation.lock('landscape').catch(() => {})
       }
     } else {
       if (document.exitFullscreen) {
-        document.exitFullscreen().catch(console.error)
+        document.exitFullscreen().catch(() => {})
       } else if (document.webkitExitFullscreen) {
         document.webkitExitFullscreen()
+      }
+      if (window.screen?.orientation?.unlock) {
+        window.screen.orientation.unlock()
       }
     }
   }
@@ -389,9 +411,13 @@ export default function App() {
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
                   ref={videoRef}
-                  src="/video/cortometraje_45s.mp4?v=20260930_prod_v2"
+                  src="/video/cortometraje_45s.mp4?v=20260930_sfx_v2_opt"
                   poster="/assets/lucia.jpg"
                   playsInline
+                  webkit-playsinline="true"
+                  disableRemotePlayback
+                  x-webkit-airplay="deny"
+                  controlsList="nodownload nofullscreen noremoteplayback"
                   preload="auto"
                   onClick={togglePlay}
                   className="w-full h-full object-cover cursor-pointer"
