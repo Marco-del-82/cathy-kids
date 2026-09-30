@@ -81,7 +81,8 @@ export const ToolkitLeadForm = () => {
 
   const triggerDirectDownload = () => {
     const link = document.createElement('a');
-    link.href = '/downloads/Toolkit_Clinico_CatyKids.pdf';
+    // Cache bust forzado para asegurar siempre la descarga del PDF editorial más reciente
+    link.href = '/downloads/Toolkit_Clinico_CatyKids.pdf?v=' + Date.now();
     link.download = 'Toolkit_Clinico_CatyKids.pdf';
     document.body.appendChild(link);
     link.click();

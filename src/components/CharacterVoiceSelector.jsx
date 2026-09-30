@@ -1,16 +1,21 @@
-import React, { useState, useRef } from 'react';
-import { Play, Pause, Sparkles, Flame, ShieldCheck, HeartCrack, Eye, Luggage, Wand2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Play, Pause, Sparkles, Flame, ShieldCheck } from 'lucide-react';
 
-const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const CharacterCard = ({ 
+  char, 
+  isActive, 
+  isPlayingVoice, 
+  onToggleActive, 
+  onToggleVoice 
+}) => {
   const videoRef = useRef(null);
   const Icon = char.theme.icon;
 
-  const shouldAnimate = isHovered || isPlaying;
+  const isAnimated = isActive || isPlayingVoice;
 
-  React.useEffect(() => {
+  // Escuchar evento global de parada de emergencia
+  useEffect(() => {
     const handleStopAll = () => {
-      setIsHovered(false);
       const video = videoRef.current;
       if (video) {
         video.pause();
@@ -21,13 +26,14 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
     return () => window.removeEventListener('cathy:stop-all-character-media', handleStopAll);
   }, []);
 
-  React.useEffect(() => {
+  // Controlar reproducción del video: SIEMPRE MUTED para evitar que los audios se contrapongan
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (shouldAnimate) {
-      window.dispatchEvent(new CustomEvent('cathy:duck-main-video'));
-      video.muted = false;
+    if (isAnimated) {
+      video.muted = true;
+      video.defaultMuted = true;
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {});
@@ -37,73 +43,78 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
       try {
         video.currentTime = 0;
       } catch (e) {}
-      window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     }
-  }, [shouldAnimate]);
+  }, [isAnimated]);
 
   return (
     <div
       onMouseEnter={() => {
-        setIsHovered(true);
+        // En desktop activa la previsualización al pasar el mouse
+        if (window.matchMedia('(hover: hover)').matches) {
+          onToggleActive(char.id, true);
+        }
       }}
       onMouseLeave={() => {
-        setIsHovered(false);
+        // En desktop apaga al retirar el mouse (salvo que esté sonando la voz)
+        if (window.matchMedia('(hover: hover)').matches && !isPlayingVoice) {
+          onToggleActive(null, false);
+        }
       }}
       className={`group relative rounded-3xl p-5 border bg-slate-900/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
-        isPlaying ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
+        isPlayingVoice ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
       }`}
     >
       {/* Glow ambiental */}
       <div className={`absolute top-0 right-0 w-44 h-44 bg-gradient-to-br ${char.theme.glow} rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity`} />
 
       <div>
-        {/* Imagen del Personaje con Video interactivo al Hover o Tap (Solo el botón inferior activa la voz) */}
+        {/* Imagen del Personaje con Video interactivo al Tap/Click */}
         <div
           onClick={() => {
-            // El clic sobre la imagen solo alterna la animación de video, NUNCA la voz
-            setIsHovered(prev => !prev);
+            // Tocar la imagen alterna la animación exclusivamente para este personaje
+            onToggleActive(isActive ? null : char.id);
           }}
-          className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all cursor-pointer"
-          title="Toca para ver en movimiento"
+          className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all cursor-pointer select-none"
+          title="Toca para animar"
         >
           {/* Imagen Estática de Fondo */}
           <img
             src={char.image}
             alt={char.name}
             className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
-              shouldAnimate ? 'opacity-0' : 'opacity-100 group-hover:scale-105'
+              isAnimated ? 'opacity-0' : 'opacity-100 group-hover:scale-105'
             }`}
           />
 
-          {/* Video Animado Activo al Hover o al Escuchar Audio (con sus efectos de sonido SFX nativos) */}
+          {/* Video Animado: SIEMPRE MUTED (Silenciado) en iOS y Android */}
           {char.videoSrc && (
             <video
               ref={videoRef}
               src={char.videoSrc}
               loop
+              muted
               playsInline
               webkit-playsinline="true"
               disableRemotePlayback
               disablePictureInPicture
               x-webkit-airplay="deny"
               controlsList="nodownload noplaybackrate nofullscreen noremoteplayback"
-              preload="auto"
+              preload="metadata"
               className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
-                shouldAnimate ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                isAnimated ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
             />
           )}
 
           {/* Indicador de animación activa */}
-          {shouldAnimate ? (
+          {isAnimated ? (
             <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
               <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/85 text-emerald-400 border border-emerald-400/40 backdrop-blur-md flex items-center gap-1 shadow-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                {isPlaying ? 'Reproduciendo Voz' : 'Animación Activa'}
+                {isPlayingVoice ? 'Reproduciendo Voz' : 'Animación Activa'}
               </span>
             </div>
           ) : (
-            /* Badge de invitación táctil visible en móviles */
             <div className="md:hidden absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
               <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/85 text-amber-300 border border-amber-400/40 backdrop-blur-md flex items-center gap-1 shadow-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -153,13 +164,13 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
         </div>
       </div>
 
-      {/* Controles de Audio */}
+      {/* Botón de Reproducción de Voz Oficial (Única fuente de sonido) */}
       <div>
         <button
-          onClick={() => onTogglePlay(char)}
+          onClick={() => onToggleVoice(char)}
           className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${char.theme.button}`}
         >
-          {isPlaying ? (
+          {isPlayingVoice ? (
             <>
               <Pause className="w-3.5 h-3.5 fill-current" />
               <span>Detener Voz</span>
@@ -182,8 +193,10 @@ const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
 };
 
 export const CharacterVoiceSelector = () => {
-  const [playingId, setPlayingId] = useState(null);
+  const [activeCharId, setActiveCharId] = useState(null);
+  const [playingVoiceId, setPlayingVoiceId] = useState(null);
   const activeAudioRef = useRef(null);
+  const sectionRef = useRef(null);
 
   const characters = [
     {
@@ -248,27 +261,95 @@ export const CharacterVoiceSelector = () => {
     }
   ];
 
-  const togglePlay = (char) => {
-    // Si ya está reproduciendo este mismo, detenerlo
-    if (playingId === char.id) {
+  // Función maestra para apagar todos los audios y videos inmediatamente
+  const stopAllMedia = () => {
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      try { activeAudioRef.current.currentTime = 0; } catch (e) {}
+      activeAudioRef.current = null;
+    }
+    setPlayingVoiceId(null);
+    setActiveCharId(null);
+    window.dispatchEvent(new CustomEvent('cathy:stop-all-character-media'));
+    window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
+  };
+
+  // DETECCIÓN DE SCROLL ROBUSTA PARA iOS Y ANDROID (IntersectionObserver + Scroll Pasivo + Visibilidad)
+  useEffect(() => {
+    // 1. IntersectionObserver estándar para navegadores modernos
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.1) {
+            stopAllMedia();
+          }
+        });
+      },
+      { threshold: [0, 0.1, 0.2] }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    // 2. Fallback de Scroll Pasivo para Safari iOS (inercia táctil)
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      // Si el bloque se desplazó fuera del viewport visible, pausar de inmediato
+      if (rect.bottom < 50 || rect.top > viewportHeight - 50) {
+        stopAllMedia();
+      }
+    };
+
+    // 3. Fallback de cambio de pestaña o bloqueo de pantalla en móviles
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAllMedia();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  const handleToggleActive = (charId) => {
+    // Si se activa un nuevo personaje, apagar el audio del anterior si había uno
+    if (charId && charId !== activeCharId && playingVoiceId && playingVoiceId !== charId) {
       if (activeAudioRef.current) {
         activeAudioRef.current.pause();
-        activeAudioRef.current.currentTime = 0;
         activeAudioRef.current = null;
       }
-      setPlayingId(null);
+      setPlayingVoiceId(null);
       window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
+    }
+    setActiveCharId(charId);
+  };
+
+  const handleToggleVoice = (char) => {
+    // Si ya está sonando este mismo personaje, detenerlo
+    if (playingVoiceId === char.id) {
+      stopAllMedia();
       return;
     }
 
-    // Detener audio anterior si existe
+    // Detener cualquier audio previo
     if (activeAudioRef.current) {
       activeAudioRef.current.pause();
-      activeAudioRef.current.currentTime = 0;
+      try { activeAudioRef.current.currentTime = 0; } catch (e) {}
       activeAudioRef.current = null;
     }
 
-    // Crear y reproducir nueva instancia con soporte móvil completo
+    // Activar animación exclusiva para este personaje
+    setActiveCharId(char.id);
+
     try {
       window.dispatchEvent(new CustomEvent('cathy:duck-main-video'));
       const audio = new Audio(char.audioSrc);
@@ -277,14 +358,13 @@ export const CharacterVoiceSelector = () => {
       activeAudioRef.current = audio;
 
       audio.onended = () => {
-        setPlayingId(null);
+        setPlayingVoiceId(null);
         activeAudioRef.current = null;
         window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
       };
 
-      audio.onerror = (err) => {
-        console.error("Audio playback error:", err);
-        setPlayingId(null);
+      audio.onerror = () => {
+        setPlayingVoiceId(null);
         activeAudioRef.current = null;
         window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
       };
@@ -292,23 +372,23 @@ export const CharacterVoiceSelector = () => {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          setPlayingId(char.id);
+          setPlayingVoiceId(char.id);
         }).catch((err) => {
-          console.warn("Autoplay/Gesture error:", err);
-          setPlayingId(null);
+          console.warn("Audio play prevented:", err);
+          setPlayingVoiceId(null);
           activeAudioRef.current = null;
           window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
         });
       }
     } catch (e) {
-      console.error("Fatal audio init error:", e);
-      setPlayingId(null);
+      console.error("Audio init error:", e);
+      setPlayingVoiceId(null);
       window.dispatchEvent(new CustomEvent('cathy:unduck-main-video'));
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-16">
+    <div ref={sectionRef} className="max-w-7xl mx-auto px-4 py-16">
       <div className="text-center mb-12">
         <span className="text-xs uppercase tracking-widest font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-700/50 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-lg">
           <Sparkles className="w-3.5 h-3.5 text-yellow-400 animate-spin" style={{ animationDuration: '6s' }} />
@@ -327,8 +407,10 @@ export const CharacterVoiceSelector = () => {
           <CharacterCard
             key={char.id}
             char={char}
-            isPlaying={playingId === char.id}
-            onTogglePlay={togglePlay}
+            isActive={activeCharId === char.id}
+            isPlayingVoice={playingVoiceId === char.id}
+            onToggleActive={handleToggleActive}
+            onToggleVoice={handleToggleVoice}
           />
         ))}
       </div>
