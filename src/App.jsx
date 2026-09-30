@@ -43,7 +43,7 @@ const PHASES = [
     subtitle: 'El Niño y sus Herramientas Somáticas',
     badge: 'Toma 3 • 00:26 - 00:35',
     color: 'amber',
-    character: '/assets/lucia.jpg',
+    character: '/assets/lucia_clay_full.jpg',
     quote: '“El niño no necesita que le quiten el enojo; necesita aprender a poner límites sin lastimar a los que ama.”',
     clinicalNote: 'Respiración somática e integración emocional. En lugar de patologizar el enojo, se dota al menor de herramientas para delimitar con seguridad afectiva.',
     metric: 'Regulación Somática Consciente'
@@ -55,7 +55,7 @@ const PHASES = [
     subtitle: 'La Pregunta Ancla para el Foro Clínico',
     badge: 'Toma 4 • 00:35 - 00:45',
     color: 'emerald',
-    character: '/assets/lucia.jpg',
+    character: '/assets/lucia_clay_full.jpg',
     quote: '“En la familia y en el espacio terapéutico... ¿desde cuál estamos interviniendo? ¿A cuál decides alimentar hoy?”',
     clinicalNote: 'Cathy Calderón de la Barca. Herramientas clínicas, psicoeducación y literatura terapéutica para una crianza con apego seguro y límites conscientes.',
     metric: 'Anclaje Terapéutico y Crianza'
@@ -90,7 +90,7 @@ const CHARACTERS_LAB = [
     name: 'Lucía (La Integración)',
     tagline: 'La Domadora Consciente',
     color: 'purple',
-    image: '/assets/lucia.jpg',
+    image: '/assets/lucia_clay_full.jpg',
     physiology: 'Lucía al centro, sonriendo con su camiseta de arcoíris y cabello ondulado cobrizo, en actitud de apertura y valentía.',
     neurobiology: 'Integración interhemisférica. Aceptación de las emociones sin juzgarlas, eligiendo conscientemente desde los valores familiares.',
     phrases: ['“El plan de la Curiosidad.”', '“Observa dónde sientes el volcán.”', '“Ahora en casa también vive Empatía.”'],
@@ -411,7 +411,7 @@ export default function App() {
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
                   ref={videoRef}
-                  poster="/assets/lucia.jpg"
+                  poster="/assets/lucia_clay_full.jpg"
                   playsInline
                   webkit-playsinline="true"
                   disableRemotePlayback
