@@ -411,7 +411,6 @@ export default function App() {
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
                   ref={videoRef}
-                  src="/video/cortometraje_45s.mp4?v=20260930_sfx_v2_opt"
                   poster="/assets/lucia.jpg"
                   playsInline
                   webkit-playsinline="true"
@@ -419,9 +418,12 @@ export default function App() {
                   x-webkit-airplay="deny"
                   controlsList="nodownload nofullscreen noremoteplayback"
                   preload="auto"
+                  muted={isMuted}
                   onClick={togglePlay}
                   className="w-full h-full object-cover cursor-pointer"
-                />
+                >
+                  <source src="/video/cortometraje_45s.mp4?v=20260930_sfx_v2_opt" type="video/mp4" />
+                </video>
 
                 {/* Big Play Overlay when Paused or Stopped */}
                 {!isPlaying && (
