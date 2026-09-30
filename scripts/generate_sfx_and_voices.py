@@ -23,7 +23,7 @@ os.makedirs(SFX_DIR, exist_ok=True)
 os.makedirs(AUDIO_DIR, exist_ok=True)
 os.makedirs(PUBLIC_AUDIO_DIR, exist_ok=True)
 
-SAMPLE_RATE = 44100
+SAMPLE_RATE = 48000
 
 def generate_sfx_01_enojo_sucio():
     """SFX 1: Heavy cinematic thuds (spiked mace impacts) with warm sub-bass punch (11s).
@@ -222,20 +222,21 @@ def build_composite_master():
         "-i", os.path.join(SFX_DIR, "sfx_03_lucia_respiro_magico.wav"),
         "-i", os.path.join(SFX_DIR, "sfx_04_cierre_acorde_dorado.wav"),
         "-filter_complex", (
-            "[1:a]volume=0.25,adelay=0|0[sfx1];"
-            "[2:a]volume=0.35,adelay=11000|11000[sfx2];"
-            "[3:a]volume=0.20,adelay=23000|23000[sfx3];"
-            "[4:a]volume=0.25,adelay=35000|35000[sfx4];"
-            "[0:a]volume=1.0[voice];"
-            "[voice][sfx1][sfx2][sfx3][sfx4]amix=inputs=5:duration=first:dropout_transition=2[out]"
+            "[1:a]volume=0.20,adelay=0|0,aresample=48000[sfx1];"
+            "[2:a]volume=0.30,adelay=11000|11000,aresample=48000[sfx2];"
+            "[3:a]volume=0.18,adelay=23000|23000,aresample=48000[sfx3];"
+            "[4:a]volume=0.22,adelay=35000|35000,aresample=48000[sfx4];"
+            "[0:a]volume=1.0,aresample=48000[voice];"
+            "[voice][sfx1][sfx2][sfx3][sfx4]amix=inputs=5:duration=first:dropout_transition=2,lowpass=f=10000[out]"
         ),
         "-map", "[out]",
+        "-ar", "48000",
         "-codec:a", "libmp3lame",
         "-b:a", "256k",
         master_mp3
     ]
     subprocess.run(cmd, check=True)
-    subprocess.run(["ffmpeg", "-y", "-i", master_mp3, master_wav], check=True)
+    subprocess.run(["ffmpeg", "-y", "-i", master_mp3, "-ar", "48000", master_wav], check=True)
     print(f"Pristine Master Composite Created: {master_mp3}")
 
 if __name__ == "__main__":

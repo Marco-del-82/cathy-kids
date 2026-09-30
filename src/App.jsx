@@ -345,7 +345,7 @@ export default function App() {
                 <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                   <video
                     ref={videoRef}
-                    src="/video/cortometraje_45s.mp4?v=2"
+                    src="/video/cortometraje_45s.mp4?v=3"
                     poster="/assets/lucia.jpg"
                     playsInline
                     preload="auto"
