@@ -462,7 +462,7 @@ export default function App() {
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
                   ref={videoRef}
-                  src="/video/cortometraje_45s.mp4?v=20260930_sfx_master_v2"
+                  src="/video/La_Anatomia_del_Limite_sfx_v2.mp4?v=20260930_master_final"
                   poster="/assets/lucia.jpg"
                   playsInline
                   webkit-playsinline="true"
