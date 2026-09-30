@@ -98,6 +98,13 @@ const CHARACTERS_LAB = [
   }
 ]
 
+const CLINICAL_SUBTITLES = [
+  { start: 0.0, end: 11.0, text: "Cuando corregimos desde la reactividad y la humillación, el límite se convierte en herida. El Enojo Sucio contamina el vínculo y apaga el aprendizaje infantil por miedo." },
+  { start: 11.0, end: 26.0, text: "Pero el enojo no se reprime: es energía vital para frenar la injusticia. Cuando nace desde el respeto, se convierte en Enojo Limpio: sostiene el límite con firmeza, manteniendo el corazón abierto y el apego a salvo." },
+  { start: 26.0, end: 35.0, text: "El niño no necesita que le quiten el enojo; necesita aprender a poner límites sin lastimar a los que ama." },
+  { start: 35.0, end: 40.5, text: "En la familia y en el espacio terapéutico... ¿desde cuál estamos interviniendo? ¿A cuál decides alimentar hoy?" }
+]
+
 export default function App() {
   const videoRef = useRef(null)
   const cinemaContainerRef = useRef(null)
@@ -107,6 +114,7 @@ export default function App() {
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showSubtitles, setShowSubtitles] = useState(true)
 
   // Media synchronization and projector keyboard controls
   useEffect(() => {
@@ -268,6 +276,7 @@ export default function App() {
   // Lab Character State
   const [selectedChar, setSelectedChar] = useState(CHARACTERS_LAB[0])
   const activePhase = PHASES[activePhaseIndex]
+  const activeSubtitle = CLINICAL_SUBTITLES.find(s => currentTime >= s.start && currentTime < s.end)?.text || null
 
   return (
     <div className="min-h-screen bg-[#07090e] text-slate-100 selection:bg-blue-600 selection:text-white">
@@ -350,37 +359,22 @@ export default function App() {
               'border-emerald-500/30 shadow-emerald-950/40'
             }`}
           >
-            {/* Top Video Header HUD */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10 mb-4">
-              <div className="flex items-center gap-3">
-                <div className={`w-3.5 h-3.5 rounded-full ${
+            {/* Top Video Header HUD — Clean & Minimalist */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-2.5 h-2.5 rounded-full transition-all ${
                   isPlaying
-                    ? activePhase.color === 'red' ? 'bg-red-400 animate-ping' :
-                      activePhase.color === 'blue' ? 'bg-blue-400 animate-ping' :
-                      activePhase.color === 'amber' ? 'bg-amber-400 animate-ping' : 'bg-emerald-400 animate-ping'
-                    : 'bg-rose-500 ring-2 ring-rose-400/40'
+                    ? 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-pulse'
+                    : 'bg-slate-500'
                 }`} />
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-white text-sm sm:text-base tracking-wide">
-                      {activePhase.badge}
-                    </span>
-                    <span className="text-[11px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-white/10 text-slate-200">
-                      {activePhase.title}
-                    </span>
-                  </div>
-                </div>
+                <span className="text-xs sm:text-sm font-medium tracking-wide text-slate-400">
+                  La Regulación y el Límite <span className="text-slate-600">•</span> <span className="text-slate-300">Cathy Kids Master</span>
+                </span>
               </div>
 
-              {/* Atajos de Teclado & Timecode para Proyector */}
-              <div className="flex items-center gap-2.5">
-                <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-400 bg-slate-900/90 px-3 py-1 rounded-lg border border-white/10">
-                  <span className="text-amber-400 font-bold">[Espacio]</span> Play/Pausa • <span className="text-rose-400 font-bold">[S]</span> Stop • <span className="text-blue-400 font-bold">[F]</span> Fullscreen
-                </span>
-                <span className="text-sm font-mono font-black text-amber-400 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-amber-500/30 shadow-inner">
-                  {Math.floor(currentTime)}s <span className="text-slate-500 font-normal">/ {Math.floor(duration)}s</span>
-                </span>
-              </div>
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-slate-500">
+                <span className="text-slate-400">[Espacio]</span> Play • <span className="text-slate-400">[F]</span> Fullscreen
+              </span>
             </div>
 
             {/* CINEMA SCREEN AND PROJECTOR CONSOLE */}
@@ -397,6 +391,17 @@ export default function App() {
                   onClick={togglePlay}
                   className="w-full h-full object-contain cursor-pointer"
                 />
+
+                {/* Non-Invasive Broadcast Subtitles Overlay */}
+                {showSubtitles && activeSubtitle && isPlaying && (
+                  <div className="absolute bottom-3 left-2 right-2 sm:bottom-5 sm:left-6 sm:right-6 flex justify-center pointer-events-none z-20 transition-all">
+                    <div className="max-w-2xl px-3.5 py-1.5 rounded-xl bg-slate-950/85 backdrop-blur-md border border-white/15 text-center shadow-2xl">
+                      <p className="text-xs sm:text-sm md:text-base font-medium text-white tracking-wide leading-snug drop-shadow">
+                        {activeSubtitle}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Big Play Overlay when Paused or Stopped */}
                 {!isPlaying && (
@@ -455,8 +460,20 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Secondary Toggles: Mute & Fullscreen */}
+                {/* Secondary Toggles: Subtitles CC, Mute & Fullscreen */}
                 <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowSubtitles(!showSubtitles)}
+                    className={`h-10 px-2.5 rounded-xl font-mono text-xs font-bold transition-all flex items-center justify-center border ${
+                      showSubtitles
+                        ? 'bg-blue-600/30 text-blue-300 border-blue-500/50 shadow-md shadow-blue-500/20'
+                        : 'bg-slate-900/90 text-slate-500 border-white/10 hover:text-slate-300'
+                    }`}
+                    title={showSubtitles ? 'Ocultar subtítulos [CC]' : 'Mostrar subtítulos [CC]'}
+                  >
+                    CC
+                  </button>
+
                   <button
                     onClick={toggleMute}
                     className="w-10 h-10 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-white/10 flex items-center justify-center transition-colors"

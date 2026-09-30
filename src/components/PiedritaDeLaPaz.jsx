@@ -222,42 +222,44 @@ export const PiedritaDeLaPaz = () => {
                   }}
                 />
 
-                {/* Overlay de texto encima de la piedra */}
-                <div className="relative z-10 bg-slate-950/70 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg">
-                  {hasCompleted ? (
-                    <div className="flex flex-col items-center text-cyan-200">
-                      <Sparkles className="w-8 h-8 text-yellow-300 animate-bounce mb-1" />
-                      <span className="text-xs font-black uppercase tracking-wider text-cyan-300">
-                        ¡Piedrita Serena!
-                      </span>
-                      <span className="text-[11px] text-white font-medium">
-                        Listos para dialogar
-                      </span>
-                    </div>
-                  ) : isHolding ? (
-                    <div className="flex flex-col items-center text-amber-200">
-                      <Wind className="w-7 h-7 text-amber-300 animate-spin mb-1" style={{ animationDuration: '4s' }} />
-                      <span className="text-xs font-black uppercase tracking-wider">
-                        Enfriando volcán...
-                      </span>
-                      <span className="text-[11px] text-white">
-                        Mantén presionado
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center text-rose-200">
-                      <Flame className="w-7 h-7 text-rose-400 animate-pulse mb-1" />
-                      <span className="text-xs font-black uppercase tracking-wider">
-                        Toca y Mantén
-                      </span>
-                      <span className="text-[10px] text-slate-300">
-                        para iniciar respiración
-                      </span>
-                    </div>
-                  )}
-                </div>
+                {/* Overlay de texto encima de la piedra (Solo cuando no ha completado el enfriamiento) */}
+                {!hasCompleted && (
+                  <div className="relative z-10 bg-slate-950/70 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg">
+                    {isHolding ? (
+                      <div className="flex flex-col items-center text-amber-200">
+                        <Wind className="w-7 h-7 text-amber-300 animate-spin mb-1" style={{ animationDuration: '4s' }} />
+                        <span className="text-xs font-black uppercase tracking-wider">
+                          Enfriando volcán...
+                        </span>
+                        <span className="text-[11px] text-white">
+                          Mantén presionado
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center text-rose-200">
+                        <Flame className="w-7 h-7 text-rose-400 animate-pulse mb-1" />
+                        <span className="text-xs font-black uppercase tracking-wider">
+                          Toca y Mantén
+                        </span>
+                        <span className="text-[10px] text-slate-300">
+                          para iniciar respiración
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </button>
             </div>
+
+            {/* Badge de Piedrita Serena visible sin tapar la piedra */}
+            {hasCompleted && (
+              <div className="mt-3 flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-400/50 text-cyan-300 shadow-xl shadow-cyan-950/60 animate-fadeIn">
+                <Sparkles className="w-4 h-4 text-yellow-300 animate-pulse" />
+                <span className="text-xs font-black uppercase tracking-wider text-cyan-200">
+                  Piedrita Serena • Lista para dialogar
+                </span>
+              </div>
+            )}
 
             <div className="mt-4 flex items-center gap-2">
               <span className="text-xs font-mono text-slate-400">

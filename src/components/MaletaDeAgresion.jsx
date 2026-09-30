@@ -101,32 +101,28 @@ export const MaletaDeAgresion = () => {
 
         {/* Zona Izquierda: La Agresión con sus Maletas */}
         <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-white/10 relative text-center">
-          <div className="relative group">
+          <div className="relative group overflow-hidden rounded-2xl">
             <img
-              src="/assets/agresion.jpg"
-              alt="Agresión con Maleta"
-              className={`w-64 h-64 object-cover rounded-2xl shadow-2xl transition-all duration-700 ${
-                isDeparted
-                  ? 'translate-x-6 opacity-30 grayscale filter blur-[1px]'
-                  : 'hover:scale-105'
-              }`}
+              src={isDeparted ? '/assets/agresion_avion_despedida.jpg' : '/assets/agresion.jpg'}
+              alt={isDeparted ? 'Agresión despidiéndose en avión' : 'Agresión con Maleta'}
+              className="w-72 h-72 object-cover rounded-2xl shadow-2xl transition-all duration-700 hover:scale-105"
             />
 
             {/* Cartel de Despedida cuando se activa */}
             {isDeparted && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/85 backdrop-blur-md rounded-2xl p-4 text-center border-2 border-emerald-400 animate-fadeIn">
-                <Sparkles className="w-8 h-8 text-yellow-300 animate-spin mb-2" style={{ animationDuration: '6s' }} />
-                <h4 className="text-lg font-black text-white">
-                  ¡Agresión ha empacado y se fue!
-                </h4>
-                <p className="text-xs text-emerald-300 mt-1 max-w-xs">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent p-4 flex flex-col items-center text-center animate-fadeIn">
+                <span className="text-xs font-black uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-bounce" />
+                  ¡Agresión ha partido en su avión!
+                </span>
+                <p className="text-[11px] text-slate-300 mt-1 max-w-xs">
                   "Con límites firmes y respetuosos, la violencia física ya no cabe en este hogar."
                 </p>
                 <button
                   onClick={resetGame}
-                  className="mt-4 px-3 py-1.5 rounded-lg bg-white/10 text-white text-xs hover:bg-white/20 flex items-center gap-1.5"
+                  className="mt-2.5 px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-200 border border-emerald-500/30 text-[11px] hover:bg-emerald-500/30 flex items-center gap-1.5 transition-colors"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" /> Jugar de nuevo
+                  <RotateCcw className="w-3 h-3" /> Jugar de nuevo
                 </button>
               </div>
             )}
@@ -138,7 +134,7 @@ export const MaletaDeAgresion = () => {
                 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                 : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
             }`}>
-              {isDeparted ? '🚪 Camino a la puerta de salida' : '🎒 Esperando en la sala'}
+              {isDeparted ? '✈️ Volando hacia el horizonte' : '🎒 Esperando en la sala'}
             </span>
           </div>
         </div>
