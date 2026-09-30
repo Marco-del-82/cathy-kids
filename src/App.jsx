@@ -423,7 +423,7 @@ export default function App() {
                 <div className={`relative w-full ${isFullscreen ? 'h-full flex items-center justify-center' : 'aspect-video'}`}>
                   <video
                     ref={videoRef}
-                    src="/video/cortometraje_45s.mp4"
+                    src="/video/La_Anatomia_del_Limite_sfx_v2.mp4"
                     type="video/mp4"
                     poster="/assets/lucia_clay_full.jpg"
                     playsInline
