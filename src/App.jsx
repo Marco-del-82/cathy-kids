@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import {
   Play, Pause, Volume2, VolumeX, Maximize2, Minimize2,
   Heart, Sparkles, BookOpen, Brain, Activity, CheckCircle2, Radio,
-  Film, ChevronDown, ChevronUp
+  Film, ChevronDown, ChevronUp, MessageCircle
 } from 'lucide-react'
 import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
 import { ReguladorRelacional } from './components/ReguladorRelacional'
@@ -955,6 +955,22 @@ export default function App() {
           Desarrollo, Narrativa Clínica y Alta Disponibilidad soportada por <strong>SEYER Distributed Architecture</strong>.
         </p>
       </footer>
+
+      {/* Botón Flotante Permanente de WhatsApp con Cathy */}
+      <a
+        href="https://wa.me/525561776727?text=Hola%20Cathy%2C%20visito%20cathykids.club%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20las%20herramientas%20cl%C3%ADnicas%20y%20conferencias."
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Contactar a Cathy Calderón por WhatsApp"
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2.5 px-4 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-[0_10px_25px_-5px_rgba(16,185,129,0.5)] border border-emerald-400/40 hover:scale-105 active:scale-95 transition-all group backdrop-blur-sm"
+      >
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+        </span>
+        <MessageCircle className="w-5 h-5 fill-white/20" />
+        <span className="hidden sm:inline">WhatsApp Clínico</span>
+      </a>
     </div>
   )
 }
