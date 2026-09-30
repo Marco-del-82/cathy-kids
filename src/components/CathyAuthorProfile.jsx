@@ -82,15 +82,21 @@ export const CathyAuthorProfile = () => {
         {/* Author Card */}
         <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left: Author Portrait & Credentials */}
+            {/* Left: Author Clinical Seal & Credentials */}
             <div className="lg:col-span-5 flex flex-col items-center text-center">
               <div className="relative group mb-5">
-                <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl overflow-hidden p-1.5 bg-gradient-to-tr from-blue-500 via-indigo-500 to-amber-400 shadow-2xl shadow-blue-500/20">
-                  <img
-                    src="/assets/lucia_avatar.jpg"
-                    alt="Cathy Calderón de la Barca"
-                    className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500"
-                  />
+                <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-3xl overflow-hidden p-1 bg-gradient-to-tr from-blue-500 via-indigo-500 to-amber-400 shadow-2xl shadow-blue-500/20 flex items-center justify-center">
+                  <div className="w-full h-full rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 flex flex-col items-center justify-center p-6 border border-white/10 text-center shadow-inner">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-500/20 to-blue-500/20 border border-amber-400/40 flex items-center justify-center mb-3 shadow-inner">
+                      <BookOpen className="w-10 h-10 text-amber-300" />
+                    </div>
+                    <span className="font-heading font-extrabold text-white text-base tracking-wide">
+                      Cathy Calderón
+                    </span>
+                    <span className="text-[11px] font-mono text-cyan-400 mt-0.5">
+                      Dirección Clínica & Autora
+                    </span>
+                  </div>
                 </div>
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-slate-900 border border-amber-500/40 text-[11px] font-bold text-amber-300 shadow-lg flex items-center gap-1.5 whitespace-nowrap">
                   <Award className="w-3.5 h-3.5 text-amber-400" />

@@ -16,59 +16,42 @@ export const MaletaDeAgresion = () => {
     { id: 8, text: "Cruzar brazos y avisar cuando esté listo", icon: "🤝" }
   ];
 
-  // AudioContext Singleton persistente para soportar clicks rápidos ilimitados sin agotar hardware
-  const getAudioContext = () => {
-    if (typeof window === 'undefined') return null;
-    if (!window.__cathySharedAudioCtx || window.__cathySharedAudioCtx.state === 'closed') {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        window.__cathySharedAudioCtx = new AudioCtx();
-      }
-    }
-    if (window.__cathySharedAudioCtx && window.__cathySharedAudioCtx.state === 'suspended') {
-      window.__cathySharedAudioCtx.resume();
-    }
-    return window.__cathySharedAudioCtx;
-  };
-
+  // Pre-allocated Audio Pool para clic ultrarrápido en móvil y desktop sin agotar hardware
   const playClick = () => {
     try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(620, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.06);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.07);
+      if (!window.__cathyClickPool) {
+        const CLICK_SRC = '/audio/sfx/maleta_click.mp3?v=20260930_prod_v2';
+        window.__cathyClickPool = [
+          new Audio(CLICK_SRC),
+          new Audio(CLICK_SRC),
+          new Audio(CLICK_SRC),
+          new Audio(CLICK_SRC)
+        ];
+        window.__cathyClickPool.forEach(a => { a.preload = 'auto'; a.playsInline = true; });
+        window.__cathyClickIndex = 0;
+      }
+      const audio = window.__cathyClickPool[window.__cathyClickIndex];
+      window.__cathyClickIndex = (window.__cathyClickIndex + 1) % window.__cathyClickPool.length;
+      audio.currentTime = 0;
+      const p = audio.play();
+      if (p !== undefined) p.catch(() => {});
     } catch (e) {
-      console.warn("Error click audio:", e);
+      console.warn("Click audio fallback:", e);
     }
   };
 
   const playSuccess = () => {
     try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-      [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.9);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + idx * 0.12);
-        osc.stop(ctx.currentTime + idx * 0.12 + 0.9);
-      });
+      if (!window.__cathySuccessAudio) {
+        window.__cathySuccessAudio = new Audio('/audio/sfx/maleta_success.mp3?v=20260930_prod_v2');
+        window.__cathySuccessAudio.preload = 'auto';
+        window.__cathySuccessAudio.playsInline = true;
+      }
+      window.__cathySuccessAudio.currentTime = 0;
+      const p = window.__cathySuccessAudio.play();
+      if (p !== undefined) p.catch(() => {});
     } catch (e) {
-      console.warn("Error success audio:", e);
+      console.warn("Success audio fallback:", e);
     }
   };
 

@@ -103,7 +103,7 @@ export default function App() {
   const cinemaContainerRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
-  const duration = 44.97
+  const [duration, setDuration] = useState(40.5)
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -112,6 +112,12 @@ export default function App() {
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+
+    const handleLoadedMetadata = () => {
+      if (video.duration && !isNaN(video.duration)) {
+        setDuration(video.duration)
+      }
+    }
 
     const handleTimeUpdate = () => {
       const time = video.currentTime
@@ -131,6 +137,7 @@ export default function App() {
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
 
+    video.addEventListener('loadedmetadata', handleLoadedMetadata)
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('ended', handleEnded)
     video.addEventListener('play', handlePlay)
@@ -175,6 +182,7 @@ export default function App() {
     document.addEventListener('fullscreenchange', handleFullscreenChange)
 
     return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata)
       video.removeEventListener('timeupdate', handleTimeUpdate)
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('play', handlePlay)
@@ -370,7 +378,7 @@ export default function App() {
                   <span className="text-amber-400 font-bold">[Espacio]</span> Play/Pausa • <span className="text-rose-400 font-bold">[S]</span> Stop • <span className="text-blue-400 font-bold">[F]</span> Fullscreen
                 </span>
                 <span className="text-sm font-mono font-black text-amber-400 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-amber-500/30 shadow-inner">
-                  {Math.floor(currentTime)}s <span className="text-slate-500 font-normal">/ 45s</span>
+                  {Math.floor(currentTime)}s <span className="text-slate-500 font-normal">/ {Math.floor(duration)}s</span>
                 </span>
               </div>
             </div>
@@ -381,7 +389,7 @@ export default function App() {
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-white/15 shadow-2xl group">
                 <video
                   ref={videoRef}
-                  src="/video/cortometraje_45s.mp4?v=3"
+                  src="/video/cortometraje_45s.mp4?v=20260930_prod_v2"
                   poster="/assets/lucia.jpg"
                   playsInline
                   preload="auto"
@@ -399,7 +407,7 @@ export default function App() {
                       <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
                     </div>
                     <span className="mt-3 sm:mt-4 text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-md">
-                      {currentTime > 0 ? 'Pausado — Toca para continuar' : 'Reproducir Cortometraje (45s)'}
+                      {currentTime > 0 ? 'Pausado — Toca para continuar' : `Reproducir Video (${Math.floor(duration)}s)`}
                     </span>
                     <span className="text-[11px] sm:text-xs text-slate-400 mt-1 font-mono">
                       {currentTime > 0 ? 'Toca la pantalla para reproducir o pausar' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
@@ -442,7 +450,7 @@ export default function App() {
                   <div className="flex items-center gap-1.5 font-mono text-xs sm:text-sm font-bold text-slate-200">
                     <span className="text-amber-400">{Math.floor(currentTime)}s</span>
                     <span className="text-slate-500">/</span>
-                    <span className="text-slate-400">45s</span>
+                    <span className="text-slate-400">{Math.floor(duration)}s</span>
                   </div>
                 </div>
 

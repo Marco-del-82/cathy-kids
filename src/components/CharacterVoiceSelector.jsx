@@ -3,7 +3,7 @@ import { Play, Pause, Sparkles, Flame, ShieldCheck, HeartCrack, Eye, Luggage, Wa
 
 export const CharacterVoiceSelector = () => {
   const [playingId, setPlayingId] = useState(null);
-  const audioRefs = useRef({});
+  const activeAudioRef = useRef(null);
 
   const characters = [
     {
@@ -12,7 +12,7 @@ export const CharacterVoiceSelector = () => {
       ageTag: '6 Años • Protagonista Valiente',
       role: 'Aprende a transformar la tormenta en valentía y límites firmes',
       quote: '"A veces siento el volcán en el pecho... pero respiro profundo y elijo no lastimar a los que amo. ¡Elijo la luz del Enojo Limpio!"',
-      audioSrc: '/audio/lucia_voice.mp3',
+      audioSrc: '/audio/lucia_voice.mp3?v=20260930_prod_v2',
       voiceName: 'Voz Niña 6 Años (Dulce & Valiente)',
       image: '/assets/lucia.jpg',
       magicPower: 'Báculo de Domadora y Piedrita de la Paz',
@@ -30,8 +30,8 @@ export const CharacterVoiceSelector = () => {
       name: 'Enojo Limpio',
       ageTag: 'El Guardián con Corazón',
       role: 'Firmeza con valores, respeto y amor que cuida sin lastimar',
-      quote: '"¡El enojo no es para destruir! Es mi superpoder para poner límites con amor y cuidar nuestro corazón."',
-      audioSrc: '/audio/enojo_limpio_voice.mp3',
+      quote: '"¡El enojo no es para destruir! Es mi superpoder de héroe para poner límites con amor y cuidar nuestro corazón."',
+      audioSrc: '/audio/enojo_limpio_voice.mp3?v=20260930_prod_v2',
       voiceName: 'Voz Caricatura Animada (Héroe Noble)',
       image: '/assets/enojo-limpio.jpg',
       magicPower: 'Escudo de Luz y Corazón Abierto',
@@ -49,8 +49,8 @@ export const CharacterVoiceSelector = () => {
       name: 'Enojo Sucio',
       ageTag: 'El Volcán Reactivo',
       role: 'Púas, críticas y gritos que explotan sin control',
-      quote: '"¡¡Todo me molesta!! ¡¡Si me tocan, exploto como un volcán y grito más fuerte!! ¡¡Aaargh!!"',
-      audioSrc: '/audio/enojo_sucio_voice.mp3',
+      quote: '"¡¡Todo me molesta!! ¡¡Si me tocan, exploto como un volcán y grito con furia!! ¡¡Grrr, fuera de mi camino!!"',
+      audioSrc: '/audio/enojo_sucio_voice.mp3?v=20260930_prod_v2',
       voiceName: 'Voz Estilo Furia (Intensa Mente)',
       image: '/assets/enojo-sucio.jpg',
       magicPower: 'Bola de Púas de Metal sobre el Corazón',
@@ -65,30 +65,57 @@ export const CharacterVoiceSelector = () => {
     }
   ];
 
-  const togglePlay = (id) => {
-    if (playingId && playingId !== id && audioRefs.current[playingId]) {
-      audioRefs.current[playingId].pause();
-      audioRefs.current[playingId].currentTime = 0;
-    }
-
-    const currentAudio = audioRefs.current[id];
-    if (!currentAudio) return;
-
-    if (playingId === id) {
-      currentAudio.pause();
-      currentAudio.currentTime = 0;
+  const togglePlay = (char) => {
+    // Si ya está reproduciendo este mismo, detenerlo
+    if (playingId === char.id) {
+      if (activeAudioRef.current) {
+        activeAudioRef.current.pause();
+        activeAudioRef.current.currentTime = 0;
+        activeAudioRef.current = null;
+      }
       setPlayingId(null);
-    } else {
-      currentAudio.play().then(() => {
-        setPlayingId(id);
-      }).catch(err => {
-        console.error("Error al reproducir audio:", err);
-      });
+      return;
     }
-  };
 
-  const handleEnded = () => {
-    setPlayingId(null);
+    // Detener audio anterior si existe
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current.currentTime = 0;
+      activeAudioRef.current = null;
+    }
+
+    // Crear y reproducir nueva instancia con soporte móvil completo
+    try {
+      const audio = new Audio(char.audioSrc);
+      audio.playsInline = true;
+      audio.preload = 'auto';
+      activeAudioRef.current = audio;
+
+      audio.onended = () => {
+        setPlayingId(null);
+        activeAudioRef.current = null;
+      };
+
+      audio.onerror = (err) => {
+        console.error("Audio playback error:", err);
+        setPlayingId(null);
+        activeAudioRef.current = null;
+      };
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          setPlayingId(char.id);
+        }).catch((err) => {
+          console.warn("Autoplay/Gesture error:", err);
+          setPlayingId(null);
+          activeAudioRef.current = null;
+        });
+      }
+    } catch (e) {
+      console.error("Fatal audio init error:", e);
+      setPlayingId(null);
+    }
   };
 
   return (
@@ -172,15 +199,8 @@ export const CharacterVoiceSelector = () => {
 
               {/* Controles de Audio */}
               <div>
-                <audio
-                  ref={(el) => (audioRefs.current[char.id] = el)}
-                  src={char.audioSrc}
-                  onEnded={handleEnded}
-                  preload="metadata"
-                />
-
                 <button
-                  onClick={() => togglePlay(char.id)}
+                  onClick={() => togglePlay(char)}
                   className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${char.theme.button}`}
                 >
                   {isPlaying ? (

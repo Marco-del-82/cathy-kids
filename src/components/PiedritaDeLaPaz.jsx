@@ -9,80 +9,52 @@ export const PiedritaDeLaPaz = () => {
   const [hasCompleted, setHasCompleted] = useState(false);
   const holdIntervalRef = useRef(null);
 
-  // AudioContext Singleton persistente
-  const getAudioContext = () => {
-    if (typeof window === 'undefined') return null;
-    if (!window.__cathySharedAudioCtx || window.__cathySharedAudioCtx.state === 'closed') {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) window.__cathySharedAudioCtx = new AudioCtx();
-    }
-    if (window.__cathySharedAudioCtx && window.__cathySharedAudioCtx.state === 'suspended') {
-      window.__cathySharedAudioCtx.resume();
-    }
-    return window.__cathySharedAudioCtx;
-  };
+  const lastStepPlayedRef = useRef(0);
 
-  // Efecto de sonido inmediato al apachurrar la Piedrita (tactile calming resonance)
+  // Efecto de sonido inmediato al apachurrar la Piedrita (compatible 100% con iOS y Android)
   const playStonePress = () => {
     try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-
-      const osc = ctx.createOscillator();
-      const harmonic = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(432, ctx.currentTime); // Frecuencia orgánica 432Hz
-      osc.frequency.exponentialRampToValueAtTime(216, ctx.currentTime + 0.35);
-
-      harmonic.type = 'triangle';
-      harmonic.frequency.setValueAtTime(864, ctx.currentTime);
-      harmonic.frequency.exponentialRampToValueAtTime(432, ctx.currentTime + 0.28);
-
-      gain.gain.setValueAtTime(0.18, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
-
-      osc.connect(gain);
-      harmonic.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start();
-      harmonic.start();
-      osc.stop(ctx.currentTime + 0.4);
-      harmonic.stop(ctx.currentTime + 0.4);
+      if (!window.__cathyStonePressAudio) {
+        window.__cathyStonePressAudio = new Audio('/audio/sfx/stone_press.mp3?v=20260930_prod_v2');
+        window.__cathyStonePressAudio.preload = 'auto';
+        window.__cathyStonePressAudio.playsInline = true;
+      }
+      window.__cathyStonePressAudio.currentTime = 0;
+      const p = window.__cathyStonePressAudio.play();
+      if (p !== undefined) p.catch(() => {});
     } catch (e) {
       console.warn("Audio press fallback:", e);
     }
   };
 
-  // Sintetizador Web Audio API para campana de paz / cuenco tibetano al completar
+  // Sonido progresivo en cada paso de respiración mientras se apachurra
+  const playStepSound = (step) => {
+    if (lastStepPlayedRef.current === step) return;
+    lastStepPlayedRef.current = step;
+    try {
+      const audio = new Audio(`/audio/sfx/stone_step_${step}.mp3?v=20260930_prod_v2`);
+      audio.preload = 'auto';
+      audio.playsInline = true;
+      const p = audio.play();
+      if (p !== undefined) p.catch(() => {});
+    } catch (e) {
+      console.warn("Step audio fallback:", e);
+    }
+  };
+
+  // Campana de paz / cuenco tibetano al completar (meta de 20°C)
   const playPeaceChime = () => {
     try {
-      const ctx = getAudioContext();
-      if (!ctx) return;
-
-      // Fundamental y armónicos
-      const freqs = [528, 660, 792, 1056]; // Frecuencia Solfeggio 528Hz (Transformación y Paz)
-      freqs.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = idx === 0 ? 'sine' : 'triangle';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        const volume = 0.22 / (idx + 1);
-        gain.gain.setValueAtTime(volume, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.5);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start();
-        osc.stop(ctx.currentTime + 3.6);
-      });
+      if (!window.__cathyStonePeaceAudio) {
+        window.__cathyStonePeaceAudio = new Audio('/audio/sfx/stone_peace.mp3?v=20260930_prod_v2');
+        window.__cathyStonePeaceAudio.preload = 'auto';
+        window.__cathyStonePeaceAudio.playsInline = true;
+      }
+      window.__cathyStonePeaceAudio.currentTime = 0;
+      const p = window.__cathyStonePeaceAudio.play();
+      if (p !== undefined) p.catch(() => {});
     } catch (e) {
-      console.warn("AudioContext chime fallback:", e);
+      console.warn("Audio chime fallback:", e);
     }
   };
 
@@ -114,11 +86,20 @@ export const PiedritaDeLaPaz = () => {
         }
 
         const next = Math.max(20, prev - 2);
-        // Actualizar pasos de respiración según enfriamiento
-        if (next < 80 && next >= 60) setBreathStep(1);
-        else if (next < 60 && next >= 40) setBreathStep(2);
-        else if (next < 40 && next >= 25) setBreathStep(3);
-        else if (next <= 20) setBreathStep(4);
+        // Actualizar pasos de respiración y detonar sonido de progreso en tiempo real
+        if (next < 80 && next >= 60) {
+          setBreathStep(1);
+          playStepSound(1);
+        } else if (next < 60 && next >= 40) {
+          setBreathStep(2);
+          playStepSound(2);
+        } else if (next < 40 && next >= 25) {
+          setBreathStep(3);
+          playStepSound(3);
+        } else if (next <= 20) {
+          setBreathStep(4);
+          playStepSound(4);
+        }
 
         return next;
       });
@@ -128,6 +109,7 @@ export const PiedritaDeLaPaz = () => {
   const stopCooling = () => {
     if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
     setIsHolding(false);
+    lastStepPlayedRef.current = 0;
   };
 
   const resetStone = () => {
@@ -136,6 +118,7 @@ export const PiedritaDeLaPaz = () => {
     setBreathStep(0);
     setIsHolding(false);
     setHasCompleted(false);
+    lastStepPlayedRef.current = 0;
   };
 
   useEffect(() => {
@@ -204,10 +187,13 @@ export const PiedritaDeLaPaz = () => {
 
               {/* Botón / Piedra Táctil */}
               <button
+                onPointerDown={startCooling}
+                onPointerUp={stopCooling}
+                onPointerLeave={stopCooling}
+                onTouchStart={(e) => { e.preventDefault(); startCooling(); }}
+                onTouchEnd={(e) => { e.preventDefault(); stopCooling(); }}
                 onMouseDown={startCooling}
                 onMouseUp={stopCooling}
-                onTouchStart={startCooling}
-                onTouchEnd={stopCooling}
                 onMouseLeave={stopCooling}
                 className={`relative w-56 h-56 sm:w-64 sm:h-64 rounded-full overflow-hidden border-4 transition-all duration-300 shadow-2xl flex flex-col items-center justify-center p-4 text-center ${
                   isCooled
