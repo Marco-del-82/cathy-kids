@@ -1,6 +1,147 @@
 import React, { useState, useRef } from 'react';
 import { Play, Pause, Sparkles, Flame, ShieldCheck, HeartCrack, Eye, Luggage, Wand2 } from 'lucide-react';
 
+const CharacterCard = ({ char, isPlaying, onTogglePlay }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef(null);
+  const Icon = char.theme.icon;
+
+  const shouldAnimate = isHovered || isPlaying;
+
+  React.useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (shouldAnimate) {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    } else {
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch (e) {}
+    }
+  }, [shouldAnimate]);
+
+  return (
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative rounded-3xl p-5 border bg-slate-900/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
+        isPlaying ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
+      }`}
+    >
+      {/* Glow ambiental */}
+      <div className={`absolute top-0 right-0 w-44 h-44 bg-gradient-to-br ${char.theme.glow} rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity`} />
+
+      <div>
+        {/* Imagen del Personaje con Video interactivo al Hover / Reproducción */}
+        <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all cursor-pointer">
+          {/* Imagen Estática de Fondo */}
+          <img
+            src={char.image}
+            alt={char.name}
+            className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+              shouldAnimate ? 'opacity-0' : 'opacity-100 group-hover:scale-105'
+            }`}
+          />
+
+          {/* Video Animado Activo al Hover o al Escuchar Audio */}
+          {char.videoSrc && (
+            <video
+              ref={videoRef}
+              src={char.videoSrc}
+              muted
+              loop
+              playsInline
+              preload="auto"
+              className={`w-full h-full object-cover absolute inset-0 transition-opacity duration-300 ${
+                shouldAnimate ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
+            />
+          )}
+
+          {/* Indicador de animación activa */}
+          {shouldAnimate && (
+            <div className="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+              <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/80 text-emerald-400 border border-emerald-400/30 backdrop-blur-md flex items-center gap-1 shadow-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                Animación Activa
+              </span>
+            </div>
+          )}
+
+          <div className="absolute top-2.5 left-2.5 z-10">
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md ${char.theme.badgeBg}`}>
+              {char.ageTag}
+            </span>
+          </div>
+          <div className="absolute bottom-2.5 right-2.5 z-10">
+            <div className="w-8 h-8 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
+              <Icon className="w-4 h-4" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-2">
+          <h3 className="text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
+            {char.name}
+          </h3>
+          <p className="text-[11px] text-slate-400 font-mono mt-0.5 line-clamp-1">
+            {char.voiceName}
+          </p>
+        </div>
+
+        <p className="text-xs text-slate-300 mb-3 leading-snug line-clamp-2">
+          {char.role}
+        </p>
+
+        {/* Diálogo del Cuento */}
+        <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3 mb-3 relative">
+          <p className="text-xs italic text-slate-200 leading-relaxed">
+            {char.quote}
+          </p>
+        </div>
+
+        {/* Llave Mágica / Mensaje Secreto */}
+        <div className="bg-blue-950/30 border border-blue-500/20 rounded-xl p-2.5 mb-4 text-[11px] text-blue-200 flex items-start gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-yellow-300 shrink-0 mt-0.5" />
+          <span className="leading-tight">
+            <strong>Poder:</strong> {char.secretMessage}
+          </span>
+        </div>
+      </div>
+
+      {/* Controles de Audio */}
+      <div>
+        <button
+          onClick={() => onTogglePlay(char)}
+          className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${char.theme.button}`}
+        >
+          {isPlaying ? (
+            <>
+              <Pause className="w-3.5 h-3.5 fill-current" />
+              <span>Detener Voz</span>
+              <span className="flex gap-0.5 ml-2 items-end h-3.5">
+                <span className="w-1 bg-current animate-pulse h-2.5" />
+                <span className="w-1 bg-current animate-pulse delay-75 h-3.5" />
+                <span className="w-1 bg-current animate-pulse delay-150 h-1.5" />
+              </span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Escuchar Voz Real</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export const CharacterVoiceSelector = () => {
   const [playingId, setPlayingId] = useState(null);
   const activeAudioRef = useRef(null);
@@ -12,9 +153,10 @@ export const CharacterVoiceSelector = () => {
       ageTag: '6 Años • Protagonista Valiente',
       role: 'Aprende a transformar la tormenta en valentía y límites firmes',
       quote: '"A veces siento el volcán en el pecho... pero respiro profundo y elijo no lastimar a los que amo. ¡Elijo la luz del Enojo Limpio!"',
-      audioSrc: '/audio/lucia_voice.mp3?v=20260930_prod_v2',
-      voiceName: 'Voz Niña 6 Años (Dulce & Valiente)',
-      image: '/assets/lucia.jpg',
+      audioSrc: '/audio/lucia_voice.mp3?v=20260930_prod_v3',
+      voiceName: 'Voz Niña (Dulce & Valiente)',
+      image: '/assets/lucia_clay_full.jpg',
+      videoSrc: '/video/lucia-animada.mp4',
       magicPower: 'Báculo de Domadora y Piedrita de la Paz',
       secretMessage: 'Al mirar a mamá y papá a los ojos con valentía, la vergüenza se disuelve.',
       theme: {
@@ -34,6 +176,7 @@ export const CharacterVoiceSelector = () => {
       audioSrc: '/audio/enojo_limpio_voice.mp3?v=20260930_prod_v2',
       voiceName: 'Voz Caricatura Animada (Héroe Noble)',
       image: '/assets/enojo-limpio.jpg',
+      videoSrc: '/video/enojo-limpio-animado.mp4',
       magicPower: 'Escudo de Luz y Corazón Abierto',
       secretMessage: 'Dice ¡Para! y ¡No me gusta! con respeto, sin usar malas palabras.',
       theme: {
@@ -53,6 +196,7 @@ export const CharacterVoiceSelector = () => {
       audioSrc: '/audio/enojo_sucio_voice.mp3?v=20260930_prod_v2',
       voiceName: 'Voz Estilo Furia (Intensa Mente)',
       image: '/assets/enojo-sucio.jpg',
+      videoSrc: '/video/enojo-sucio-animado.mp4',
       magicPower: 'Bola de Púas de Metal sobre el Corazón',
       secretMessage: 'Cree que atacar primero lo protegerá, pero solo lo deja solito.',
       theme: {
@@ -134,96 +278,14 @@ export const CharacterVoiceSelector = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {characters.map((char) => {
-          const Icon = char.theme.icon;
-          const isPlaying = playingId === char.id;
-
-          return (
-            <div
-              key={char.id}
-              className={`group relative rounded-3xl p-5 border bg-slate-900/85 backdrop-blur-xl transition-all duration-300 flex flex-col justify-between overflow-hidden shadow-xl ${char.theme.border} ${
-                isPlaying ? 'scale-[1.03] ring-2 ring-white/30 shadow-2xl bg-slate-900/95' : 'hover:scale-[1.01]'
-              }`}
-            >
-              {/* Glow ambiental */}
-              <div className={`absolute top-0 right-0 w-44 h-44 bg-gradient-to-br ${char.theme.glow} rounded-full blur-3xl pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity`} />
-
-              <div>
-                {/* Imagen del Personaje en Estilo 3D Storybook */}
-                <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-4 bg-slate-950/80 border border-white/10 shadow-inner group-hover:border-white/20 transition-all">
-                  <img
-                    src={char.image}
-                    alt={char.name}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-2.5 left-2.5">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border backdrop-blur-md ${char.theme.badgeBg}`}>
-                      {char.ageTag}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-2.5 right-2.5">
-                    <div className="w-8 h-8 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-lg">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-2">
-                  <h3 className="text-xl font-black text-white group-hover:text-cyan-300 transition-colors">
-                    {char.name}
-                  </h3>
-                  <p className="text-[11px] text-slate-400 font-mono mt-0.5 line-clamp-1">
-                    {char.voiceName}
-                  </p>
-                </div>
-
-                <p className="text-xs text-slate-300 mb-3 leading-snug line-clamp-2">
-                  {char.role}
-                </p>
-
-                {/* Diálogo del Cuento */}
-                <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3 mb-3 relative">
-                  <p className="text-xs italic text-slate-200 leading-relaxed">
-                    {char.quote}
-                  </p>
-                </div>
-
-                {/* Llave Mágica / Mensaje Secreto */}
-                <div className="bg-blue-950/30 border border-blue-500/20 rounded-xl p-2.5 mb-4 text-[11px] text-blue-200 flex items-start gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-300 shrink-0 mt-0.5" />
-                  <span className="leading-tight">
-                    <strong>Poder:</strong> {char.secretMessage}
-                  </span>
-                </div>
-              </div>
-
-              {/* Controles de Audio */}
-              <div>
-                <button
-                  onClick={() => togglePlay(char)}
-                  className={`w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 ${char.theme.button}`}
-                >
-                  {isPlaying ? (
-                    <>
-                      <Pause className="w-3.5 h-3.5 fill-current" />
-                      <span>Detener Voz</span>
-                      <span className="flex gap-0.5 ml-2 items-end h-3.5">
-                        <span className="w-1 bg-current animate-pulse h-2.5" />
-                        <span className="w-1 bg-current animate-pulse delay-75 h-3.5" />
-                        <span className="w-1 bg-current animate-pulse delay-150 h-1.5" />
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>Escuchar Voz Real</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          );
-        })}
+        {characters.map((char) => (
+          <CharacterCard
+            key={char.id}
+            char={char}
+            isPlaying={playingId === char.id}
+            onTogglePlay={togglePlay}
+          />
+        ))}
       </div>
     </div>
   );

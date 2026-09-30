@@ -1,9 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Luggage, Check, Sparkles, Shield, HeartHandshake, ArrowRight, RotateCcw } from 'lucide-react';
 
 export const MaletaDeAgresion = () => {
   const [selectedPhrases, setSelectedPhrases] = useState([]);
   const [isDeparted, setIsDeparted] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isHovered && !isDeparted) {
+      const playPromise = video.play();
+      if (playPromise !== undefined) playPromise.catch(() => {});
+    } else {
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch (e) {}
+    }
+  }, [isHovered, isDeparted]);
 
   const cleanPhrases = [
     { id: 1, text: "¡Para!", icon: "🛑" },
@@ -100,17 +117,58 @@ export const MaletaDeAgresion = () => {
         <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Zona Izquierda: La Agresión con sus Maletas */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-white/10 relative text-center">
-          <div className="relative group overflow-hidden rounded-2xl">
-            <img
-              src={isDeparted ? '/assets/agresion_avion_despedida.jpg' : '/assets/agresion.jpg'}
-              alt={isDeparted ? 'Agresión despidiéndose en avión' : 'Agresión con Maleta'}
-              className="w-72 h-72 object-cover rounded-2xl shadow-2xl transition-all duration-700 hover:scale-105"
-            />
+        <div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="lg:col-span-5 flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-white/10 relative text-center group cursor-pointer"
+        >
+          <div className="relative overflow-hidden rounded-2xl w-72 h-72">
+            {isDeparted ? (
+              /* Imagen de Lucía volando en su avión tras la despedida de Agresión */
+              <img
+                src="/assets/lucia-despedida-agresion.jpg"
+                alt="Lucía y Agresión despidiéndose en avión Punk Flyer"
+                className="w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-700 hover:scale-105"
+              />
+            ) : (
+              <>
+                {/* Imagen estática de Agresión */}
+                <img
+                  src="/assets/agresion.jpg"
+                  alt="Agresión con Maleta"
+                  className={`w-full h-full object-cover rounded-2xl shadow-2xl transition-opacity duration-300 absolute inset-0 ${
+                    isHovered ? 'opacity-0' : 'opacity-100 group-hover:scale-105'
+                  }`}
+                />
+
+                {/* Video animado al pasar el mouse */}
+                <video
+                  ref={videoRef}
+                  src="/video/agresion-animado.mp4"
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  className={`w-full h-full object-cover rounded-2xl shadow-2xl transition-opacity duration-300 absolute inset-0 ${
+                    isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  }`}
+                />
+
+                {/* Badge flotante de animación activa */}
+                {isHovered && (
+                  <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
+                    <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-950/80 text-rose-400 border border-rose-500/30 backdrop-blur-md flex items-center gap-1 shadow-md">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+                      Movimiento Activo
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Cartel de Despedida cuando se activa */}
             {isDeparted && (
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-transparent p-4 flex flex-col items-center text-center animate-fadeIn">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent p-4 flex flex-col items-center text-center animate-fadeIn">
                 <span className="text-xs font-black uppercase tracking-wider text-emerald-300 flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-bounce" />
                   ¡Agresión ha partido en su avión!
@@ -134,7 +192,7 @@ export const MaletaDeAgresion = () => {
                 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                 : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
             }`}>
-              {isDeparted ? '✈️ Volando hacia el horizonte' : '🎒 Esperando en la sala'}
+              {isDeparted ? '✈️ Volando hacia el horizonte' : isHovered ? '⚡ Agresión inquieta (Pasa a Enojo Limpio)' : '🎒 Esperando en la sala'}
             </span>
           </div>
         </div>
