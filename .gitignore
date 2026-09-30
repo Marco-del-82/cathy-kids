@@ -7,19 +7,39 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+
+# Production builds
+dist/
+dist-ssr/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*~
+
+# Temporary artifacts and media scratchpads
+.tempmediaStorage/
+.user_uploaded/
+scratch/
+*.tmp
+*.temp
+*.bak
+
+# Redundant raw archives
 public/assets/video/tomas_backup/
+public/video/candidatos/
