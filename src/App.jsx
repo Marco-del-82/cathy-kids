@@ -204,7 +204,15 @@ export default function App() {
     const v = videoRef.current
     if (!v) return
     if (v.paused) {
-      v.play().catch(console.error)
+      const playPromise = v.play()
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.warn("iOS autoplay prevented with sound, muting and retrying", error);
+          v.muted = true;
+          setIsMuted(true);
+          v.play().catch(e => console.error("Total playback failure", e));
+        });
+      }
     } else {
       v.pause()
     }
@@ -432,9 +440,10 @@ export default function App() {
 
                 {/* Big Play Overlay when Paused or Stopped */}
                 {!isPlaying && (
-                  <div
+                  <button
+                    type="button"
                     onClick={togglePlay}
-                    className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40"
+                    className="absolute inset-0 w-full h-full bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40"
                   >
                     <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
                       <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
@@ -445,7 +454,7 @@ export default function App() {
                     <span className="text-[11px] sm:text-xs text-slate-400 mt-1 font-mono">
                       {currentTime > 0 ? 'Toca la pantalla para reproducir o pausar' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
                     </span>
-                  </div>
+                  </button>
                 )}
               </div>
 
