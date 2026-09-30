@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  Play, Pause, Square, RotateCcw, Volume2, VolumeX, Maximize2, Minimize2,
+  Play, Pause, Volume2, VolumeX, Maximize2, Minimize2,
   Heart, Sparkles, BookOpen, Brain, Activity, CheckCircle2, Radio,
-  Film, MonitorPlay, Subtitles, Tv
+  Film
 } from 'lucide-react'
 import { CharacterVoiceSelector } from './components/CharacterVoiceSelector'
 import { ReguladorRelacional } from './components/ReguladorRelacional'
@@ -106,7 +106,6 @@ export default function App() {
   const duration = 44.97
   const [activePhaseIndex, setActivePhaseIndex] = useState(0)
   const [isMuted, setIsMuted] = useState(false)
-  const [showSubtitles, setShowSubtitles] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   // Media synchronization and projector keyboard controls
@@ -203,13 +202,6 @@ export default function App() {
     setIsPlaying(false)
     setCurrentTime(0)
     setActivePhaseIndex(0)
-  }
-
-  const restartMedia = () => {
-    const v = videoRef.current
-    if (!v) return
-    v.currentTime = 0
-    v.play().catch(console.error)
   }
 
   const jumpToPhase = (index) => {
@@ -397,32 +389,21 @@ export default function App() {
                   className="w-full h-full object-cover cursor-pointer"
                 />
 
-                {/* Big Overlay when Paused or Stopped */}
+                {/* Big Play Overlay when Paused or Stopped */}
                 {!isPlaying && (
                   <div
                     onClick={togglePlay}
-                    className="absolute inset-0 bg-slate-950/65 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/45"
+                    className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40"
                   >
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
-                      <Play className="w-8 h-8 fill-current ml-1" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
+                      <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
                     </div>
-                    <span className="mt-4 text-base font-bold text-white tracking-wide drop-shadow-md">
-                      {currentTime > 0 ? 'Video en Pausa — Clic o [Espacio] para Continuar' : 'Reproducir Cortometraje (45s)'}
+                    <span className="mt-3 sm:mt-4 text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-md">
+                      {currentTime > 0 ? 'Pausado — Toca para continuar' : 'Reproducir Cortometraje (45s)'}
                     </span>
-                    <span className="text-xs text-slate-400 mt-1 font-mono">
-                      {currentTime > 0 ? 'Presiona [S] para detener por completo' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
+                    <span className="text-[11px] sm:text-xs text-slate-400 mt-1 font-mono">
+                      {currentTime > 0 ? 'Toca la pantalla para reproducir o pausar' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
                     </span>
-                  </div>
-                )}
-
-                {/* Subtitles Overlay */}
-                {showSubtitles && (
-                  <div className="absolute bottom-4 left-4 right-4 pointer-events-none z-20">
-                    <div className="bg-slate-950/90 backdrop-blur-md p-3.5 sm:p-4 rounded-xl border border-white/20 text-center shadow-2xl max-w-3xl mx-auto">
-                      <p className="text-xs sm:text-sm md:text-base font-semibold text-amber-300 drop-shadow leading-snug">
-                        {activePhase.quote}
-                      </p>
-                    </div>
                   </div>
                 )}
               </div>
@@ -430,7 +411,7 @@ export default function App() {
               {/* Interactive Timeline Scrubber */}
               <div
                 onClick={handleScrub}
-                className="h-3.5 w-full bg-slate-900 rounded-full cursor-pointer relative overflow-hidden border border-white/10 hover:border-white/30 transition-all group"
+                className="h-3 w-full bg-slate-900 rounded-full cursor-pointer relative overflow-hidden border border-white/10 hover:border-white/30 transition-all group"
                 title="Haz clic o arrastra para moverte en la línea de tiempo"
               >
                 {/* Progress Fill */}
@@ -438,136 +419,78 @@ export default function App() {
                   className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-100 rounded-full relative"
                   style={{ width: `${(currentTime / duration) * 100}%` }}
                 >
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white shadow-lg border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-
-                {/* Markers for the 4 scenes */}
-                <div className="absolute inset-0 flex justify-between pointer-events-none opacity-40">
-                  <span className="w-[1px] h-full bg-white" style={{ left: '27.7%' }} title="Toma 2: Enojo Limpio" />
-                  <span className="w-[1px] h-full bg-white" style={{ left: '56.6%' }} title="Toma 3: Sensor" />
-                  <span className="w-[1px] h-full bg-white" style={{ left: '83.3%' }} title="Toma 4: Cierre" />
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-lg border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
 
-              {/* Console Control Bar - Master Presenter Controls */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <div className="flex items-center gap-2">
-                  {/* PLAY / PAUSE BUTTON */}
+              {/* Sleek, Non-Invasive Modern Control Bar (Mobile & Desktop) */}
+              <div className="flex items-center justify-between gap-3 pt-1">
+                {/* Play / Pause Toggle Button */}
+                <div className="flex items-center gap-3">
                   <button
                     onClick={togglePlay}
-                    className={`px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-all hover:scale-105 active:scale-95 ${
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold shadow-lg transition-all hover:scale-105 active:scale-95 ${
                       isPlaying
                         ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
                         : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
                     }`}
-                    title="Alternar Reproducción / Pausa (Barra Espaciadora)"
+                    title={isPlaying ? 'Pausar Video (Espacio)' : 'Reproducir Video (Espacio)'}
                   >
-                    {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
-                    <span>{isPlaying ? 'PAUSA' : 'REPRODUCIR'}</span>
+                    {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 fill-current ml-0.5" />}
                   </button>
 
-                  {/* STOP BUTTON */}
-                  <button
-                    onClick={stopMedia}
-                    className="px-4 py-2.5 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-500/40 hover:border-rose-400 font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition-all hover:scale-105 active:scale-95"
-                    title="Detener por completo y reiniciar a 00:00 (Tecla S o Escape)"
-                  >
-                    <Square className="w-4 h-4 fill-current text-rose-400" />
-                    <span>STOP</span>
-                  </button>
-
-                  {/* REINICIAR */}
-                  <button
-                    onClick={restartMedia}
-                    className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 transition-colors"
-                    title="Reiniciar video desde 00:00"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1.5 font-mono text-xs sm:text-sm font-bold text-slate-200">
+                    <span className="text-amber-400">{Math.floor(currentTime)}s</span>
+                    <span className="text-slate-500">/</span>
+                    <span className="text-slate-400">45s</span>
+                  </div>
                 </div>
 
-                {/* 4 SCENE JUMP BUTTONS FOR PRESENTER */}
-                <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                  {PHASES.map((p, idx) => (
-                    <button
-                      key={p.id}
-                      onClick={() => jumpToPhase(idx)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all border ${
-                        activePhaseIndex === idx
-                          ? p.color === 'red' ? 'bg-red-500/25 text-red-200 border-red-500 shadow-md shadow-red-950/50 ring-1 ring-red-400' :
-                            p.color === 'blue' ? 'bg-blue-500/25 text-blue-200 border-blue-500 shadow-md shadow-blue-950/50 ring-1 ring-blue-400' :
-                            p.color === 'amber' ? 'bg-amber-500/25 text-amber-200 border-amber-500 shadow-md shadow-amber-950/50 ring-1 ring-amber-400' :
-                            'bg-emerald-500/25 text-emerald-200 border-emerald-500 shadow-md shadow-emerald-950/50 ring-1 ring-emerald-400'
-                          : 'bg-slate-900/80 text-slate-400 border-white/10 hover:border-white/30 hover:text-white'
-                      }`}
-                      title={`Ir a ${p.badge}`}
-                    >
-                      {p.id === 1 ? '1. Enojo Sucio' :
-                       p.id === 2 ? '2. Enojo Limpio' :
-                       p.id === 3 ? '3. Lucía Respira' : '4. Cierre'}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Secondary Toggles: Subtitles, Mute, Fullscreen */}
-                <div className="flex items-center gap-2 ml-auto">
-                  <button
-                    onClick={() => setShowSubtitles(!showSubtitles)}
-                    className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                      showSubtitles
-                        ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                        : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
-                    }`}
-                    title={showSubtitles ? 'Ocultar subtítulos' : 'Mostrar subtítulos'}
-                  >
-                    <Subtitles className="w-4 h-4" />
-                    <span className="hidden sm:inline">CC</span>
-                  </button>
-
+                {/* Secondary Toggles: Mute & Fullscreen */}
+                <div className="flex items-center gap-2">
                   <button
                     onClick={toggleMute}
-                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 transition-colors"
+                    className="w-10 h-10 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-white/10 flex items-center justify-center transition-colors"
                     title={isMuted ? 'Activar sonido (M)' : 'Silenciar (M)'}
                   >
                     {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
                   </button>
 
-                  {/* PROYECTOR FULLSCREEN BUTTON */}
                   <button
                     onClick={toggleFullscreen}
-                    className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
-                    title="Pantalla Completa para Proyector (Tecla F)"
+                    className="h-10 px-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 border border-indigo-400/30"
+                    title="Pantalla Completa / Proyector (Tecla F)"
                   >
                     {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                    <span className="hidden sm:inline">PROYECTOR (F)</span>
+                    <span className="hidden sm:inline">Pantalla Completa</span>
                   </button>
                 </div>
               </div>
 
-              {/* Synchronized Live Clinical Teleprompter Card */}
-              <div className="mt-4 p-5 rounded-2xl bg-slate-950/85 border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center shadow-xl">
+              {/* Synchronized Live Clinical Note Card (Optimized for Mobile & Desktop) */}
+              <div className="mt-3 sm:mt-4 p-3.5 sm:p-5 rounded-2xl bg-slate-950/85 border border-white/10 grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-center shadow-xl">
                 <div className="md:col-span-8 space-y-2">
                   <div className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-blue-400" />
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+                    <span className="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
                       {activePhase.metric}
                     </span>
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white font-heading">
-                    {activePhase.title} — <span className="text-slate-400 text-sm font-normal">{activePhase.subtitle}</span>
+                  <h3 className="text-base sm:text-xl font-bold text-white font-heading">
+                    {activePhase.title} — <span className="text-slate-400 text-xs sm:text-sm font-normal">{activePhase.subtitle}</span>
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-white/5 p-3 rounded-xl border-l-4 border-blue-500">
-                    <strong>Lectura Clínica:</strong> {activePhase.clinicalNote}
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-white/5 p-2.5 sm:p-3 rounded-xl border-l-4 border-blue-500">
+                    <strong className="text-blue-300">Lectura Clínica:</strong> {activePhase.clinicalNote}
                   </p>
                 </div>
 
-                <div className="md:col-span-4 flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/80 border border-white/5 text-center">
+                <div className="hidden md:flex md:col-span-4 flex-col items-center justify-center p-3 rounded-xl bg-slate-900/80 border border-white/5 text-center">
                   <img
                     src={activePhase.character === 'iot-mockup' ? '/assets/piedrita_paz.jpg' : activePhase.character}
                     alt={activePhase.title}
-                    className="w-24 h-24 object-cover rounded-xl shadow-lg mb-2"
+                    className="w-20 h-20 object-cover rounded-xl shadow-lg mb-1.5"
                   />
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono text-slate-400">
                     Asset 3D Master
                   </span>
                 </div>
