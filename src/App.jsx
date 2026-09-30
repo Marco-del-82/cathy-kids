@@ -200,17 +200,15 @@ export default function App() {
     }
   }, [])
 
-  const togglePlay = () => {
+  const togglePlay = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
     const v = videoRef.current
     if (!v) return
     if (v.paused) {
       const playPromise = v.play()
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          console.warn("iOS autoplay prevented with sound, muting and retrying", error);
-          v.muted = true;
-          setIsMuted(true);
-          v.play().catch(e => console.error("Total playback failure", e));
+          console.error("iOS strictly blocked playback (Low Power Mode or token lost):", error);
         });
       }
     } else {
@@ -430,10 +428,7 @@ export default function App() {
                     poster="/assets/lucia_clay_full.jpg"
                     playsInline
                     webkit-playsinline="true"
-                    disableRemotePlayback
-                    x-webkit-airplay="deny"
-                    controlsList="nodownload nofullscreen noremoteplayback"
-                    preload="auto"
+                    preload="metadata"
                     muted={isMuted}
                     onClick={togglePlay}
                     className={`w-full h-full object-contain cursor-pointer ${isFullscreen ? 'max-h-screen' : ''}`}
@@ -444,7 +439,8 @@ export default function App() {
                     <button
                       type="button"
                       onClick={togglePlay}
-                      className="absolute inset-0 w-full h-full bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40 border-none appearance-none"
+                      onTouchEnd={togglePlay}
+                      className="absolute inset-0 w-full h-full bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40 border-none"
                     >
                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
                         <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
@@ -480,6 +476,7 @@ export default function App() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={togglePlay}
+                        onTouchEnd={togglePlay}
                         className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold shadow-lg transition-all hover:scale-105 active:scale-95 ${
                           isPlaying
                             ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30'
