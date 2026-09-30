@@ -485,21 +485,41 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Big Play Overlay when Paused or Stopped */}
+                {/* Cinematic Non-Obtrusive Play Overlay */}
                 {!isPlaying && (
                   <div
                     onClick={togglePlay}
-                    className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-950/40"
+                    className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6 md:p-8 cursor-pointer transition-all bg-gradient-to-t from-slate-950/85 via-transparent to-black/30 hover:from-slate-950/95 group/overlay"
                   >
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-2xl shadow-blue-500/60 hover:scale-110 active:scale-95 transition-all">
-                      <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1" />
+                    {/* Top Pill / Badge */}
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[11px] font-medium text-slate-200 shadow-lg">
+                        <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
+                        <span>Cortometraje Terapéutico Oficial • 4K</span>
+                      </div>
+                      <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-black/60 text-slate-300 border border-white/10 backdrop-blur-md">
+                        {Math.floor(duration || 41)}s • Master SFX
+                      </span>
                     </div>
-                    <span className="mt-3 sm:mt-4 text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-md">
-                      {currentTime > 0 ? 'Pausado — Toca para continuar' : `Reproducir Video (${Math.floor(duration)}s)`}
-                    </span>
-                    <span className="text-[11px] sm:text-xs text-slate-400 mt-1 font-mono">
-                      {currentTime > 0 ? 'Toca la pantalla para reproducir o pausar' : 'Voz de Cathy Calderón • Master 48kHz Broadcast'}
-                    </span>
+
+                    {/* Center: Sleek floating play button with glassmorphism (leaves faces 100% visible) */}
+                    <div className="self-center my-auto">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-blue-600/90 via-indigo-600/90 to-cyan-500/90 hover:from-blue-500 hover:to-cyan-400 text-white flex items-center justify-center shadow-[0_0_35px_rgba(59,130,246,0.6)] border-2 border-white/30 backdrop-blur-sm group-hover/overlay:scale-110 active:scale-95 transition-all">
+                        <Play className="w-7 h-7 sm:w-8 sm:h-8 fill-current ml-1 drop-shadow-md" />
+                      </div>
+                    </div>
+
+                    {/* Bottom Title & Narrative Hook */}
+                    <div className="text-left space-y-1">
+                      <h3 className="text-lg sm:text-2xl font-extrabold text-white tracking-tight drop-shadow-lg [text-shadow:_0_2px_10px_rgb(0_0_0_/_90%)]">
+                        La Anatomía del Límite: <span className="bg-gradient-to-r from-blue-400 to-amber-300 bg-clip-text text-transparent">Lucía y el Enojo</span>
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-300 font-medium drop-shadow-md [text-shadow:_0_1px_6px_rgb(0_0_0_/_90%)] flex items-center gap-2">
+                        <span>El Enojo Limpio vs. Enojo Sucio</span>
+                        <span className="text-slate-500">•</span>
+                        <span className="text-emerald-400 font-semibold">{currentTime > 0 ? 'Pausado — Toca para continuar' : 'Toca para reproducir'}</span>
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
