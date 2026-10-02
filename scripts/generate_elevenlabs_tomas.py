@@ -17,7 +17,12 @@ import json
 import requests
 import subprocess
 
-API_KEY = "sk_f1487b05905246c20b70f14d0078356380288a49281a9445"
+API_KEY = os.environ.get("ELEVENLABS_API_KEY")
+if not API_KEY:
+    print("❌ [ZERO-LEAK ERROR] Falta la variable 'ELEVENLABS_API_KEY' en el entorno.", file=sys.stderr)
+    print("   Defínela en tu archivo .env local o exporta ELEVENLABS_API_KEY=tu_token.", file=sys.stderr)
+    sys.exit(1)
+
 BASE_DIR = "/home/marco/Proyectos/Cathy-Kids"
 DEST_ROOT = os.path.join(BASE_DIR, "public/assets/PARA_GROK")
 

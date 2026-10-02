@@ -14,11 +14,28 @@ node_modules/
 dist/
 dist-ssr/
 
-# Environment and secrets
+# Environment and secrets - ZERO-LEAK
 .env
 .env.*
 !.env.example
 *.local
+credentials/
+**/credentials/
+token.json
+tokens/
+*.pem
+*.key
+*.p12
+
+# Python artifacts
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# AI Agents & Graphify
+.agents/
+graphify-out/
 
 # Editor directories and files
 .vscode/*

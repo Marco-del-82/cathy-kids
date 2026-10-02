@@ -12,10 +12,16 @@ Total Duration: 45.000s
 """
 
 import os
+import sys
 import subprocess
 import requests
 
-API_KEY = "sk_f1487b05905246c20b70f14d0078356380288a49281a9445"
+API_KEY = os.environ.get("ELEVENLABS_API_KEY")
+if not API_KEY:
+    print("❌ [ZERO-LEAK ERROR] Falta la variable 'ELEVENLABS_API_KEY' en el entorno.", file=sys.stderr)
+    print("   Defínela en tu archivo .env local o exporta ELEVENLABS_API_KEY=tu_token.", file=sys.stderr)
+    sys.exit(1)
+
 VOICE_ID = "hpp4J3VqNfWAUOO0d1Us" # Bella (Warm, Mexican Spanish Clinical Narrator)
 
 BASE_DIR = "/home/marco/Proyectos/Cathy-Kids"

@@ -7,9 +7,15 @@ Generate the 3 official character voices for Cathy Kids interactive lab:
 """
 
 import os
+import sys
 import requests
 
-API_KEY = "sk_f1487b05905246c20b70f14d0078356380288a49281a9445"
+API_KEY = os.environ.get("ELEVENLABS_API_KEY")
+if not API_KEY:
+    print("❌ [ZERO-LEAK ERROR] Falta la variable 'ELEVENLABS_API_KEY' en el entorno.", file=sys.stderr)
+    print("   Defínela en tu archivo .env local o exporta ELEVENLABS_API_KEY=tu_token.", file=sys.stderr)
+    sys.exit(1)
+
 BASE_DIR = "/home/marco/Proyectos/Cathy-Kids"
 PUBLIC_AUDIO = os.path.join(BASE_DIR, "public/audio")
 os.makedirs(PUBLIC_AUDIO, exist_ok=True)
